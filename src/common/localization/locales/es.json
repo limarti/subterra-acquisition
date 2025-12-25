@@ -36,7 +36,7 @@
     "recentProjects": {
       "title": "Proyectos Recientes",
       "loading": "Cargando proyectos...",
-      "empty": "No hay proyectos recientes",
+      "empty": "No hay proyectos",
       "loadError": "Error al cargar los proyectos",
       "justNow": "Recién",
       "minutesAgo": "Hace {0}m",

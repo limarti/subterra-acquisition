@@ -3,6 +3,7 @@ import DashboardView from './features/dashboard/DashboardView.vue';
 import ProjectLayout from './features/projects/ProjectLayout.vue';
 import ProjectMapView from './features/projects/ProjectMapView.vue';
 import ProjectDetailsView from './features/projects/ProjectDetailsView.vue';
+import ProjectLogsView from './features/projects/ProjectLogsView.vue';
 import ProjectAOIView from './features/projects/ProjectAOIView.vue';
 import SettingsView from './features/settings/SettingsView.vue';
 
@@ -32,6 +33,11 @@ const router = createRouter({
           path: 'details',
           name: 'project-details',
           component: ProjectDetailsView,
+        },
+        {
+          path: 'logs',
+          name: 'project-logs',
+          component: ProjectLogsView,
         },
         {
           path: 'aoi/:idAOI',

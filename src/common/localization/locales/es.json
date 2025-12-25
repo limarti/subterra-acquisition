@@ -105,6 +105,19 @@
     },
     "export": {
       "exportFailed": "Error al exportar el proyecto"
+    },
+    "logs": {
+      "title": "Logs",
+      "refresh": "Actualizar",
+      "count": "{count} entradas",
+      "types": {
+        "eml": "EML",
+        "gps": "GPS"
+      },
+      "emptyEml": "Sin logs de EML",
+      "emptyEmlHint": "Los datos de EML aparecerán aquí cuando se conecte el dispositivo",
+      "emptyGps": "Sin logs de GPS",
+      "emptyGpsHint": "Los datos de GPS aparecerán aquí cuando se conecte el dispositivo"
     }
   },
   "projectList": {

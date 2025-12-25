@@ -5,7 +5,7 @@
     </h2>
 
     <div class="space-y-2">
-      <div class="flex flex-col @sm:flex-row @sm:justify-between gap-1">
+      <div class="flex flex-col gap-1">
         <span class="text-text-secondary">{{ $t('project.fields.name') }}:</span>
         <input v-if="editingField === 'name'"
                ref="nameInputRef"
@@ -20,7 +20,7 @@
           {{ project.name || '-' }}
         </span>
       </div>
-      <div class="flex flex-col @sm:flex-row @sm:justify-between gap-1">
+      <div class="flex flex-col gap-1">
         <span class="text-text-secondary">{{ $t('project.fields.clientName') }}:</span>
         <input v-if="editingField === 'clientName'"
                ref="clientNameInputRef"
@@ -35,7 +35,7 @@
           {{ project.clientName || '-' }}
         </span>
       </div>
-      <div class="flex flex-col @sm:flex-row @sm:justify-between gap-1">
+      <div class="flex flex-col gap-1">
         <span class="text-text-secondary">{{ $t('project.fields.jobCode') }}:</span>
         <input v-if="editingField === 'jobCode'"
                ref="jobCodeInputRef"
@@ -50,7 +50,7 @@
           {{ project.jobCode || '-' }}
         </span>
       </div>
-      <div class="flex flex-col @sm:flex-row @sm:justify-between gap-1">
+      <div class="flex flex-col gap-1">
         <span class="text-text-secondary">{{ $t('project.created') }}:</span>
         <span class="text-white px-2 py-1">{{ formatDate(project.dateCreated) }}</span>
       </div>

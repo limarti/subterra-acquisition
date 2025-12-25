@@ -3,9 +3,9 @@
     <div v-if="$slots.left || showBackButton"
          class="col-start-1 flex items-center min-w-0">
       <div v-if="showBackButton" class="flex items-center shrink-0 h-full">
-        <button class="p-2 @md:p-5 cursor-pointer text-gray-200 hover:text-white transition-colors border-r border-border-gray"
+        <button class="p-2 cursor-pointer text-gray-200 hover:text-white transition-colors border-r border-border-gray"
                 @click="emit('back')">
-          <svg class="w-5 h-5 @md:w-6 @md:h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
@@ -21,7 +21,7 @@
     <div class="col-start-2 flex justify-center items-center">
       <img src="@/assets/images/logo.svg"
            alt="Logo"
-           class="h-8 @md:h-10 select-none"
+           class="h-8 select-none"
            @touchstart="handleTouchStart"
            @touchend="handleTouchEnd"
            @touchcancel="handleTouchEnd">

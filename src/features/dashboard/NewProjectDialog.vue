@@ -12,7 +12,7 @@
     </template>
 
     <template #content>
-      <div class="flex flex-col gap-4 w-full @sm:min-w-[300px] @lg:min-w-[400px]">
+      <div class="flex flex-col gap-4 w-full">
         <div class="flex flex-col gap-3">
           <div>
             <label class="block text-xs text-text-secondary mb-1" for="projectName">

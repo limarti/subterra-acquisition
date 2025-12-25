@@ -1,7 +1,7 @@
 <template>
   <IndicatorWrapper :buttonAriaLabel="'More menu'">
     <template #icon>
-      <div class="relative w-5 h-5 @md:w-6 @md:h-6">
+      <div class="relative w-5 h-5">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="round" stroke-linejoin="miter">
           <g stroke-width="0" />
           <g stroke-linecap="round" stroke-linejoin="round" />

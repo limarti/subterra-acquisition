@@ -8,7 +8,7 @@
 
     <OverlayScrollbarsComponent class="flex-1 overflow-y-auto px-6 pt-6 pb-4">
       <div style="container-type: inline-size;" class="max-w-5xl mx-auto">
-        <MasonryGrid class="masonry-cols-1 @xl:masonry-cols-2">
+        <MasonryGrid class="masonry-cols-1">
           <!-- User Preferences -->
           <Card :title="$t('settings.user_preferences.title')">
             <div class="flex flex-col rounded-b-sm p-4 gap-2">

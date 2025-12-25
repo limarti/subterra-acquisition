@@ -1,9 +1,9 @@
 <template>
   <IndicatorWrapper :buttonAriaLabel="'GPS connection status'">
     <template #icon>
-      <div class="relative w-5 h-5 @md:w-6 @md:h-6">
+      <div class="relative w-5 h-5">
         <template v-if="isGpsDisabled">
-          <svg class="w-5 h-5 @md:w-6 @md:h-6"
+          <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
                fill="none"
                viewBox="0 0 24 24"
@@ -21,7 +21,7 @@
 
         <!-- Connected with RTK FIX (green dot) -->
         <template v-else-if="connectionState === GpsConnectionState.CONNECTED && isRtkFix && !isPositionStale">
-          <svg class="w-5 h-5 @md:w-6 @md:h-6"
+          <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
                fill="none"
                viewBox="0 0 24 24"
@@ -39,7 +39,7 @@
 
         <!-- Connected with valid position but not RTK (yellow dot) -->
         <template v-else-if="connectionState === GpsConnectionState.CONNECTED && hasValidPosition && !isPositionStale">
-          <svg class="w-5 h-5 @md:w-6 @md:h-6"
+          <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
                fill="none"
                viewBox="0 0 24 24"
@@ -57,7 +57,7 @@
 
         <!-- Disconnected or no valid position (red bar) -->
         <template v-else>
-          <svg class="w-5 h-5 @md:w-6 @md:h-6"
+          <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
                fill="none"
                viewBox="0 0 24 24"

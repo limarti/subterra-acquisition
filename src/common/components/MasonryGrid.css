@@ -1,0 +1,13 @@
+/* MasonryGrid utility classes */
+
+/* Base column count utilities - set via CSS variable for JS to read */
+.masonry-cols-1 { --masonry-columns: 1; }
+.masonry-cols-2 { --masonry-columns: 2; }
+.masonry-cols-3 { --masonry-columns: 3; }
+
+/* Container query responsive variants - matches Tailwind's @xl (36rem/576px) */
+@container (min-width: 36rem) {
+  .\@xl\:masonry-cols-1 { --masonry-columns: 1; }
+  .\@xl\:masonry-cols-2 { --masonry-columns: 2; }
+  .\@xl\:masonry-cols-3 { --masonry-columns: 3; }
+}

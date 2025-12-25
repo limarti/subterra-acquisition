@@ -1,0 +1,125 @@
+@import 'tailwindcss';
+@import 'overlayscrollbars/styles/overlayscrollbars.css';
+
+@theme {
+
+  --color-background-lighter-lighter: #2b4a67;
+  --color-background-lighter: #1d354a;
+  --color-background: #152939;
+  --color-background-darker: #152431;
+  --color-background-darker-darker: #0f1c25;
+
+  --color-accent-primary: #fa7a4f;
+  --color-accent-attention: #dfca5f;
+  --color-accent-info: #579fcd;
+
+  --color-toolbar-blue: rgba(10, 65, 104, 0.8);
+  --color-toolbar-blue-hover: rgba(0, 0, 0, 0.2);
+
+  --color-text-secondary: rgba(255, 255, 255, 0.5);
+
+  --color-border-gray: #45525a;
+  --color-border-card: rgba(69, 82, 90, 1);
+  --color-border-toolbar: rgba(255, 255, 255, 0.8);
+}
+
+/* Custom utility classes using Tailwind's @apply directive */
+@layer components {
+  .horizontal-container {
+    @apply flex;
+  }
+
+  .horizontal-container > div {
+    @apply mx-2.5 flex-wrap;
+  }
+
+  .col-3 {
+    @apply w-1/4;
+  }
+
+  .z-hud {
+    z-index: 1;
+  }
+
+  .two-column-grid {
+    @apply grid grid-cols-1 @xl:grid-cols-2 gap-6 max-w-7xl mx-auto;
+  }
+
+  .btn-selector {
+    @apply flex-1 px-3 py-2 whitespace-nowrap transition-colors text-sm border border-border-gray rounded-md;
+  }
+
+  .btn-selector-active {
+    @apply text-white border-b-2 border-b-accent-primary;
+  }
+
+  .btn-selector-inactive {
+    @apply text-text-secondary hover:text-white;
+  }
+
+  .btn-selector-disabled {
+    @apply text-text-secondary;
+  }
+}
+
+/* Custom CSS variables for the application theme */
+:root {
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #f8f8f8;
+  --vt-c-white-mute: #f2f2f2;
+
+  --vt-c-black: #181818;
+  --vt-c-black-soft: #222222;
+  --vt-c-black-mute: #282828;
+
+  --vt-c-indigo: #2c3e50;
+
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --vt-c-text-light-1: var(--vt-c-indigo);
+  --vt-c-text-dark-1: var(--vt-c-white);
+  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+}
+
+/* Semantic color variables */
+:root {
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-text-light-1);
+
+  --section-gap: 160px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background-soft: var(--vt-c-black-soft);
+    --color-background-mute: var(--vt-c-black-mute);
+
+    --color-border: var(--vt-c-divider-dark-2);
+    --color-border-hover: var(--vt-c-divider-dark-1);
+
+    --color-heading: var(--vt-c-text-dark-1);
+    --color-text: var(--vt-c-text-dark-2);
+  }
+}
+
+/* Base styles with Tailwind utilities */
+body {
+  @apply min-h-screen font-sans text-base leading-relaxed antialiased;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition: color 0.5s, background-color 0.5s;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

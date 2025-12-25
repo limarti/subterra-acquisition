@@ -1,0 +1,222 @@
+{
+  "common": {
+    "start": "Iniciar",
+    "stop": "Detener",
+    "reset": "Restablecer",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "loading": "Cargando...",
+    "channels": "Canales",
+    "channel": "Canal",
+    "back": "Atrás",
+    "done": "Listo",
+    "split_view": "Dividida",
+    "retry": "Reintentar",
+    "confirm": "Confirmar",
+    "coming_soon": "En construcción",
+    "delete": "Borrar",
+    "status": "Estado",
+    "connected": "Conectado",
+    "not_connected": "No Conectado",
+    "scanning": "Escaneando",
+    "reconnecting": "Reconectando",
+    "disabled": "Desactivado"
+  },
+  "navigation": {
+    "backToDashboard": "Volver al Tablero"
+  },
+  "landing": {
+    "logo": "LOGO"
+  },
+  "dashboard": {
+    "title": "Tablero",
+    "radar": {
+      "status": "Estado del Radar"
+    },
+    "recentProjects": {
+      "title": "Proyectos Recientes",
+      "loading": "Cargando proyectos...",
+      "empty": "No hay proyectos recientes",
+      "loadError": "Error al cargar los proyectos",
+      "justNow": "Recién",
+      "minutesAgo": "Hace {0}m",
+      "hoursAgo": "Hace {0}h",
+      "daysAgo": "Hace {0}d",
+      "createProject": "Crear nuevo proyecto",
+      "viewAll": "Ver todos los proyectos"
+    },
+    "projectCreation": {
+      "error": "Error al crear el proyecto"
+    },
+    "newProjectDialog": {
+      "title": "Crear Nuevo Proyecto"
+    }
+  },
+  "project": {
+    "label": "Proyecto",
+    "loading": "Cargando proyecto...",
+    "error": "Error al cargar el proyecto",
+    "notFound": "Proyecto no encontrado",
+    "projectDetails": "Detalles del Proyecto",
+    "created": "Creado",
+    "details": "Detalles",
+    "map": "Mapa",
+    "results": "RESULTADOS",
+    "scans": "DATOS DE ESCANEO",
+    "no_results": "Sin resultados aún",
+    "no_results_hint": "Aparecerán aquí después de agregarlos",
+    "no_scans": "Vacío",
+    "no_scans_hint": "Toca Agregar Datos para iniciar un escaneo",
+    "add_result": "Agregar Resultado",
+    "add_scan": "Agregar Datos",
+    "share": "Compartir",
+    "shareProject": "Compartir Proyecto",
+    "deleteProject": "Eliminar Proyecto",
+    "projectActions": "Acciones del proyecto",
+    "exporting": "Exportando",
+    "deleteSuccess": "Proyecto eliminado exitosamente",
+    "deleteError": "Error al eliminar el proyecto",
+    "create_scan_error": "Error al crear el escaneo",
+    "load_scans_error": "Error al cargar los escaneos",
+    "load_profile_error": "Error al cargar el perfil",
+    "createAOI": "Crear Área de Interés",
+    "renameAOI": "Renombrar AOI",
+    "deleteAOI": "Eliminar AOI",
+    "rename": "Renombrar",
+    "confirmDeleteAOI": "¿Estás seguro de que deseas eliminar '{name}'?",
+    "confirmDeleteAOIWithData": "Esto eliminará permanentemente '{name}' incluyendo {profileCount} perfil(es) y {resultCount} resultado(s).",
+    "aoi_name": "Ingresa el nombre del AOI",
+    "confirmDeleteTitle": "Confirmar Eliminación",
+    "confirmDeleteSingle": "¿Estás seguro de que deseas eliminar '{name}'? Esta acción no se puede deshacer.",
+    "confirmDeleteMultiple": "¿Estás seguro de que deseas eliminar los {count} elementos seleccionados? Esta acción no se puede deshacer.",
+    "fields": {
+      "name": "Nombre del Proyecto",
+      "clientName": "Nombre del Cliente",
+      "jobCode": "Código de Trabajo"
+    },
+    "validation": {
+      "nameRequired": "El nombre del proyecto no puede estar vacío",
+      "nameMinLength": "El nombre del proyecto debe tener al menos {min} caracteres",
+      "nameTooLong": "El nombre del proyecto debe tener {max} caracteres o menos",
+      "clientNameTooLong": "El nombre del cliente debe tener {max} caracteres o menos",
+      "jobCodeTooLong": "El código de trabajo debe tener {max} caracteres o menos"
+    },
+    "export": {
+      "exportFailed": "Error al exportar el proyecto"
+    }
+  },
+  "projectList": {
+    "title": "Proyectos",
+    "loading": "Cargando proyectos...",
+    "error": "Error al cargar los proyectos",
+    "empty": "No hay proyectos aún. ¡Crea tu primer proyecto!",
+    "createError": "Error al crear el proyecto"
+  },
+  "profile": {
+    "quick_scan": "Escaneo Rápido"
+  },
+  "unit_description_cm": "Centímetros (cm)",
+  "unit_description_m": "Metros (m)",
+  "unit_description_ft": "Pies (ft)",
+  "unit_description_in": "Pulgadas (in)",
+  "unit_abbr_cm": "cm",
+  "unit_abbr_m": "m",
+  "unit_abbr_ft": "pies",
+  "unit_abbr_in": "pulg",
+  "trace_number": "Número de Traza",
+  "distance_x": "Distancia [{0}]",
+  "distance": "Distancia",
+  "travel_time_ns": "Tiempo de Viaje [ns]",
+  "depth": "Profundidad [{0}]",
+  "dielectric": "Dieléctrico",
+  "mode": {
+    "title": "PROFUNDIDAD VS DETALLES",
+    "depth": "Profundidad",
+    "normal": "Normal",
+    "detail": "Detalle",
+    "supercharge": "Supercarga"
+  },
+  "settings": {
+    "title": "Configuración",
+    "user_preferences": {
+      "title": "Preferencias de Usuario"
+    },
+    "radar": {
+      "title": "Radar"
+    },
+    "units": {
+      "label": "Unidades"
+    },
+    "language": {
+      "label": "Idioma"
+    },
+    "radar_mode": {
+      "label": "Modo de Disparo"
+    },
+    "download_logs": {
+      "title": "Logs del Sistema",
+      "label": "Descargar logs",
+      "error": "Error al descargar los logs. Intente nuevamente."
+    },
+    "auto_gain": "AUTO",
+    "manual_curve_gain": "CURVA MANUAL",
+    "gain": "Ganancia",
+    "display": "Visualización",
+    "depth": "Profundidad",
+    "o_scope": "O-Scope",
+    "manual_curve_confirmation": {
+      "title": "¿Cambiar a Ganancia Manual?",
+      "message": "Cambiar al modo de Curva Manual desactivará la ganancia automática y te permitirá controlar la curva de ganancia manualmente."
+    }
+  },
+  "gps": {
+    "title": "GPS",
+    "device": "Dispositivo",
+    "position": "Posición",
+    "fix": "Fix",
+    "satellites": "# de satélites",
+    "refreshing": "Actualizando...",
+    "refresh_devices": "Actualizar Dispositivos",
+    "paired_devices": "Dispositivos Emparejados",
+    "bluetooth_disabled": "Bluetooth está desactivado",
+    "no_device_selected": "Ningún dispositivo seleccionado",
+    "permission_error": "Se requiere permiso de Bluetooth para conectarse a dispositivos GPS.",
+    "permission_denied": "Permiso de Bluetooth denegado",
+    "permission_denied_help_ios": "Para conectarse a dispositivos GPS, necesita habilitar manualmente los permisos de Bluetooth. Vaya a Configuración → GLA → Bluetooth y habilite los permisos.",
+    "open_settings": "Abrir Configuración",
+    "waiting_for_fix": "Esperando posiciones...",
+    "connection_type": "Tipo de Conexión",
+    "connection_type_serial": "Cable serie",
+    "connection_type_bluetooth": "Bluetooth"
+  },
+  "trigger_mode_distance": "Odómetro",
+  "trigger_mode_time": "Tiempo",
+  "device": {
+    "title": "Info del Dispositivo",
+    "systemType": "Tipo de Sistema",
+    "serialNumber": "Número de Serie",
+    "softwareVersion": "Versión del Software",
+    "discovery": {
+      "discovering": "Descubriendo dispositivo",
+      "helpTitle": "Ayuda de Conexión",
+      "intro": "Esta aplicación se conecta directamente a la red WiFi de tu dispositivo. Para establecer una conexión, por favor conéctate a la siguiente red:",
+      "credentialsTitle": "Credenciales de Red WiFi",
+      "networkName": "Nombre de red:",
+      "networkNamePlaceholder": "Modelo del Radar",
+      "password": "Contraseña:",
+      "goToWifiSettings": "Abrir Configuración WiFi"
+    }
+  },
+  "radarCollection": {
+    "title": "Recolección de Radar",
+    "startCollecting": "INICIAR RECOLECCIÓN",
+    "stopCollecting": "DETENER RECOLECCIÓN",
+    "resetProfile": "RESTAURAR PERFIL"
+  },
+  "errors": {
+    "maxFilesReached": "Se alcanzó el número máximo de archivos.",
+    "maxFilesReachedCount": "Se alcanzó el número máximo de archivos ({count}).",
+    "storageQuotaExceeded": "Se excedió la cuota de memoria de almacenamiento",
+    "parsingFile": "Error al analizar {filename}"
+  }
+}

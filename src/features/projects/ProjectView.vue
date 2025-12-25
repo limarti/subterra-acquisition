@@ -1,11 +1,55 @@
 <template>
-  <div class="h-full flex flex-col">
-    <NavigationBar :showBackButton="true" @back="navigateBack">
-      <template v-if="project" #left>
-        <PageTitle :label="$t('project.label')" :content="project.name" />
-      </template>
+  <div class="h-full flex flex-col relative">
+    <div class="relative z-10">
+      <NavigationBar :showBackButton="true" @back="navigateBack">
+        <template v-if="project" #left>
+          <PageTitle :label="$t('project.label')" :content="project.name" />
+        </template>
 
-    </NavigationBar>
+        <template v-if="project" #right>
+          <button type="button"
+                  class="p-2 cursor-pointer text-gray-200 hover:text-white transition-colors border-l border-border-gray"
+                  :title="$t('project.projectActions')"
+                  @click="isMenuOpen = !isMenuOpen">
+            <svg class="w-5 h-5"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="19" r="1" />
+            </svg>
+          </button>
+        </template>
+      </NavigationBar>
+
+      <!-- Menu drawer -->
+      <Transition name="drawer">
+        <div v-if="isMenuOpen" class="absolute top-full left-0 right-0 bg-background border-b border-border-gray shadow-lg overflow-hidden">
+          <div class="p-2">
+            <button type="button"
+                    class="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-background-lighter rounded transition-colors"
+                    @click="isMenuOpen = false; handleProjectDelete();">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+              {{ $t('project.deleteProject') }}
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </div>
+
+    <!-- Backdrop overlay -->
+    <Transition name="fade">
+      <div v-if="isMenuOpen"
+           class="absolute inset-0 bg-black/50 backdrop-blur-sm z-[5]"
+           @click="isMenuOpen = false" />
+    </Transition>
 
     <!-- Main content -->
     <OverlayScrollbarsComponent class="flex-1 px-6 py-6 h-full project-view-scroller">
@@ -52,39 +96,6 @@
                   <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" />
                 </svg>
               </ProjectActionButton>
-
-              <!-- Project kebab menu -->
-              <GeoPopper placement="bottom-end">
-                <ProjectActionButton :title="$t('project.projectActions')">
-                  <svg class="w-5 h-5"
-                       viewBox="0 0 24 24"
-                       fill="none"
-                       stroke="currentColor"
-                       stroke-width="2"
-                       stroke-linecap="round"
-                       stroke-linejoin="round">
-                    <circle cx="12" cy="5" r="1" />
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="12" cy="19" r="1" />
-                  </svg>
-                </ProjectActionButton>
-
-                <template #content="{ close }">
-                  <div class="bg-background border border-accent-attention rounded shadow-lg min-w-36">
-                    <div class="p-2">
-                      <button type="button"
-                              class="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-background-lighter rounded transition-colors"
-                              @click="close(); handleProjectDelete();">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        </svg>
-                        {{ $t('project.deleteProject') }}
-                      </button>
-                    </div>
-                  </div>
-                </template>
-              </GeoPopper>
             </div>
           </template>
         </TabBar>
@@ -128,7 +139,6 @@
   import AOIContentTab from './aoi/AOIContentTab.vue';
   import AOINameDialog from './aoi/AOINameDialog.vue';
   import ProjectActionButton from './ProjectActionButton.vue';
-  import GeoPopper from '@/common/components/GeoPopper.vue';
   import GeoConfirmationDialog from '@/generic/components/GeoConfirmationDialog.vue';
   import { useProjectsStorage } from './useProjectsStorage';
   import { useDialog } from '@/generic/composables/useDialog';
@@ -151,6 +161,7 @@
   const idTabActive = ref('details');
   const idSelectedItems = ref<Set<string>>(new Set());
   const isDeleting = ref(false);
+  const isMenuOpen = ref(false);
 
   interface TabData
   {
@@ -425,3 +436,30 @@
   });
 </script>
 
+<style scoped>
+  .drawer-enter-active,
+  .drawer-leave-active
+  {
+    transition: all 0.2s ease-out;
+    max-height: 200px;
+  }
+
+  .drawer-enter-from,
+  .drawer-leave-to
+  {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .fade-enter-active,
+  .fade-leave-active
+  {
+    transition: opacity 0.2s ease-out;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to
+  {
+    opacity: 0;
+  }
+</style>

@@ -49,7 +49,7 @@
       "error": "Error al crear el proyecto"
     },
     "newProjectDialog": {
-      "title": "Crear Nuevo Proyecto"
+      "title": "Nuevo proyecto"
     }
   },
   "project": {

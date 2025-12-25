@@ -21,36 +21,6 @@
         </span>
       </div>
       <div class="flex flex-col gap-1">
-        <span class="text-text-secondary">{{ $t('project.fields.clientName') }}:</span>
-        <input v-if="editingField === 'clientName'"
-               ref="clientNameInputRef"
-               v-model="localProject.clientName"
-               type="text"
-               class="px-2 py-1 bg-background-lighter border border-border-gray rounded-md text-white focus:outline-none min-w-48"
-               @keyup.enter="handleSave"
-               @keyup.escape="cancelEditing">
-        <span v-else
-              class="text-white cursor-pointer hover:text-accent-info px-2 py-1 min-w-48 text-right"
-              @click="startEditing('clientName')">
-          {{ project.clientName || '-' }}
-        </span>
-      </div>
-      <div class="flex flex-col gap-1">
-        <span class="text-text-secondary">{{ $t('project.fields.jobCode') }}:</span>
-        <input v-if="editingField === 'jobCode'"
-               ref="jobCodeInputRef"
-               v-model="localProject.jobCode"
-               type="text"
-               class="px-2 py-1 bg-background-lighter border border-border-gray rounded-md text-white focus:outline-none min-w-48"
-               @keyup.enter="handleSave"
-               @keyup.escape="cancelEditing">
-        <span v-else
-              class="text-white cursor-pointer hover:text-accent-info px-2 py-1 min-w-48 text-right"
-              @click="startEditing('jobCode')">
-          {{ project.jobCode || '-' }}
-        </span>
-      </div>
-      <div class="flex flex-col gap-1">
         <span class="text-text-secondary">{{ $t('project.created') }}:</span>
         <span class="text-white px-2 py-1">{{ formatDate(project.dateCreated) }}</span>
       </div>
@@ -77,7 +47,7 @@
   import { ref, computed, nextTick, reactive } from 'vue';
   import { useI18n } from 'vue-i18n';
   import type { ProjectMetadata } from './ProjectMetadata.type';
-  import { validateProjectName, validateClientName, validateJobCode } from './projectFieldsValidation';
+  import { validateProjectName } from './projectFieldsValidation';
 
   interface Props
   {
@@ -93,20 +63,16 @@
   const emit = defineEmits<Emits>();
   const { t } = useI18n();
 
-  type EditableField = 'name' | 'clientName' | 'jobCode';
+  type EditableField = 'name';
 
   const localProject = reactive({
-    name: props.project.name,
-    clientName: props.project.clientName,
-    jobCode: props.project.jobCode,
+    name: props.project.name
   });
 
   const editingField = ref<EditableField | null>(null);
   const errorMessage = ref('');
 
   const nameInputRef = ref<HTMLInputElement | null>(null);
-  const clientNameInputRef = ref<HTMLInputElement | null>(null);
-  const jobCodeInputRef = ref<HTMLInputElement | null>(null);
 
   const isEditing = computed(() => editingField.value !== null);
 
@@ -117,28 +83,13 @@
 
     await nextTick();
 
-    if (field === 'name')
-    {
-      nameInputRef.value?.focus();
-      nameInputRef.value?.select();
-    }
-    else if (field === 'clientName')
-    {
-      clientNameInputRef.value?.focus();
-      clientNameInputRef.value?.select();
-    }
-    else if (field === 'jobCode')
-    {
-      jobCodeInputRef.value?.focus();
-      jobCodeInputRef.value?.select();
-    }
+    nameInputRef.value?.focus();
+    nameInputRef.value?.select();
   };
 
   const cancelEditing = () =>
   {
     localProject.name = props.project.name;
-    localProject.clientName = props.project.clientName;
-    localProject.jobCode = props.project.jobCode;
 
     editingField.value = null;
     errorMessage.value = '';
@@ -146,9 +97,7 @@
 
   const handleSave = () =>
   {
-    const error = validateProjectName(localProject.name)
-      || validateClientName(localProject.clientName)
-      || validateJobCode(localProject.jobCode);
+    const error = validateProjectName(localProject.name);
 
     if (error)
     {
@@ -157,8 +106,6 @@
     }
 
     localProject.name = localProject.name.trim();
-    localProject.clientName = localProject.clientName.trim();
-    localProject.jobCode = localProject.jobCode.trim();
 
     emit('save', { ...localProject });
 

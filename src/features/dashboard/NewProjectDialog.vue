@@ -26,28 +26,6 @@
                    @keydown.enter="handleConfirm">
           </div>
 
-          <div>
-            <label class="block text-xs text-text-secondary mb-1" for="clientName">
-              {{ $t('project.fields.clientName') }}
-            </label>
-            <input id="clientName"
-                   v-model="clientName"
-                   type="text"
-                   class="w-full px-3 py-2 bg-background-lighter-lighter text-white border border-border-gray rounded-md focus:outline-none focus:border-primary text-sm"
-                   @keydown.enter="handleConfirm">
-          </div>
-
-          <div>
-            <label class="block text-xs text-text-secondary mb-1" for="jobCode">
-              {{ $t('project.fields.jobCode') }}
-            </label>
-            <input id="jobCode"
-                   v-model="jobCode"
-                   type="text"
-                   class="w-full px-3 py-2 bg-background-lighter-lighter text-white border border-border-gray rounded-md focus:outline-none focus:border-primary text-sm"
-                   @keydown.enter="handleConfirm">
-          </div>
-
           <p v-if="errorMessage" class="text-sm text-red-400 mt-1">
             {{ errorMessage }}
           </p>
@@ -62,28 +40,22 @@
   import { useI18n } from 'vue-i18n';
   import GeoButtonDialog from '@/generic/components/GeoButtonDialog.vue';
   import { closeDialog } from 'vue3-promise-dialog';
-  import { validateProjectName, validateClientName, validateJobCode } from '@/features/projects/projectFieldsValidation';
+  import { validateProjectName } from '@/features/projects/projectFieldsValidation';
 
   interface ProjectData
   {
     projectName: string;
-    clientName: string;
-    jobCode: string;
   }
 
   const { t } = useI18n();
 
   const projectNameInput = ref<HTMLInputElement | null>(null);
   const projectName = ref('');
-  const clientName = ref('');
-  const jobCode = ref('');
   const errorMessage = ref('');
 
   const handleConfirm = () =>
   {
-    const error = validateProjectName(projectName.value)
-      || validateClientName(clientName.value)
-      || validateJobCode(jobCode.value);
+    const error = validateProjectName(projectName.value);
 
     if (error)
     {
@@ -92,9 +64,7 @@
     }
 
     const result: ProjectData = {
-      projectName: projectName.value.trim(),
-      clientName: clientName.value.trim(),
-      jobCode: jobCode.value.trim()
+      projectName: projectName.value.trim()
     };
 
     closeDialog(result);

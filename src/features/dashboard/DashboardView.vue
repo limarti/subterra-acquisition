@@ -45,26 +45,23 @@
   import RecentProjectsPanel from '../projects/RecentProjectsPanel.vue';
   import IconButton from '@/generic/components/IconButton.vue';
   import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
+  import { useProjectsStorage } from '@/features/projects/useProjectsStorage';
 
   const router = useRouter();
+  const { saveProject } = useProjectsStorage();
 
   const navigateToNewProject = async () =>
   {
     const { openDialog } = await import('vue3-promise-dialog');
     const NewProjectDialog = (await import('./NewProjectDialog.vue')).default;
-    const { useProjectsStorage } = await import('@/features/projects/useProjectsStorage');
     const { ensureAreasExist } = await import('@/features/projects/projectUtils');
 
     const result = await openDialog(NewProjectDialog);
     if (!result) return;
-
-    const { saveProject } = useProjectsStorage();
     const idProject = crypto.randomUUID();
     const metadata = ensureAreasExist({
       id: idProject,
       name: result.projectName,
-      clientName: result.clientName,
-      jobCode: result.jobCode,
       dateCreated: Date.now(),
       areas: []
     });

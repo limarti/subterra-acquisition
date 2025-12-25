@@ -188,13 +188,6 @@ When working on any task or feature:
 
 **Key principle: ALWAYS pause when app reaches a stable, functional state - even if it's mid-way through related subtasks.**
 
-### Standard Development Checklist
-After implementing features, always run:
-1. **Testing**: `npm run test:unit` (if applicable)
-2. **Type checking**: `npm run type-check`
-3. **Linting**: `npm run lint`
-4. **Build verification**: `npm run build`
-
 ## Git Commit Process
 
 **NEVER create commits on behalf of the user. Always suggest commits only.**

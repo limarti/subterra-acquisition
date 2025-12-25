@@ -89,9 +89,9 @@ export class SimulatedBluetoothConnection implements IBluetoothConnection
     await new Promise(resolve => setTimeout(resolve, CONFIG.CONNECTION_DELAY_MS));
 
     const mockDevices: BluetoothDevice[] = [
-      { id: 'sim-1', name: 'Simulated GPS Device 1', connectionType: 'BLE', address: '00:11:22:33:44:55' },
-      { id: 'sim-2', name: 'Simulated GPS Device 2', connectionType: 'BLE', address: '00:11:22:33:44:66' },
-      { id: 'sim-3', name: 'Simulated Bluetooth Receiver', connectionType: 'BLE', address: '00:11:22:33:44:77' }
+      { id: 'sim-1', name: 'Simulated GPS Device 1', address: '00:11:22:33:44:55' },
+      { id: 'sim-2', name: 'Simulated GPS Device 2', address: '00:11:22:33:44:66' },
+      { id: 'sim-3', name: 'Simulated Bluetooth Receiver', address: '00:11:22:33:44:77' }
     ];
 
     return mockDevices;

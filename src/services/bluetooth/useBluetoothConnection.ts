@@ -1,38 +1,20 @@
 import { inject } from 'vue';
-import { BLUETOOTH_SPP_KEY, BLUETOOTH_BLE_KEY } from './createBluetoothPlugin';
+import { BLUETOOTH_KEY } from './createBluetoothPlugin';
 import type { IBluetoothConnection } from './types/IBluetoothConnection';
 import type { IBluetoothOptions } from './types/IBluetoothOptions';
 
 /**
  * Use Bluetooth SPP (Serial Port Profile) connection.
- * Available on Android. Returns null on iOS.
+ * Available on Android only.
  */
-export const useBluetoothSPP = (options: IBluetoothOptions): IBluetoothConnection | null =>
+export const useBluetooth = (options: IBluetoothOptions): IBluetoothConnection | null =>
 {
-  const sppService = inject<IBluetoothConnection | null>(BLUETOOTH_SPP_KEY, null);
+  const service = inject<IBluetoothConnection | null>(BLUETOOTH_KEY, null);
 
-  if (sppService)
+  if (service)
   {
-    sppService.provideOptions?.(options);
+    service.provideOptions?.(options);
   }
 
-  return sppService;
-};
-
-/**
- * Use Bluetooth BLE (Bluetooth Low Energy) connection.
- * Available on both Android and iOS.
- */
-export const useBluetoothBLE = (options: IBluetoothOptions): IBluetoothConnection =>
-{
-  const bleService = inject<IBluetoothConnection | null>(BLUETOOTH_BLE_KEY, null);
-
-  if (!bleService)
-  {
-    throw new Error('Bluetooth BLE service not provided');
-  }
-
-  bleService.provideOptions?.(options);
-
-  return bleService;
+  return service;
 };

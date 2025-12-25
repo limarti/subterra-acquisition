@@ -23,8 +23,7 @@ import type { IGpsTransport } from './types/IGpsTransport';
 let reconnectionTimer: number | null = null;
 let reconnectionAttempt = 0;
 let transport: IGpsTransport | null = null;
-let sppService: IBluetoothConnection | null = null;
-let bleService: IBluetoothConnection | null = null;
+let bluetoothService: IBluetoothConnection | null = null;
 let isChangingDevice = false;
 let receivingBuffer = '';
 
@@ -39,7 +38,7 @@ const MAX_RECONNECTION_DELAY = 10000;
 // ===== TRANSPORT FACTORY =====
 const createTransport = (): IGpsTransport =>
 {
-  return new BluetoothGpsTransport(sppService, bleService);
+  return new BluetoothGpsTransport(bluetoothService);
 };
 
 // ===== GPS DATA HANDLING =====
@@ -207,37 +206,22 @@ export const useGpsService = () =>
   /**
    * Initialize GPS service
    *
-   * Sets up Bluetooth services, watchers, and auto-connect logic.
+   * Sets up Bluetooth service, watchers, and auto-connect logic.
    * Called automatically by GPS plugin at app startup.
    *
-   * @param spp - SPP Bluetooth service (may be null if unavailable)
-   * @param ble - BLE Bluetooth service (may be null if unavailable)
+   * @param service - Bluetooth service (may be null if unavailable)
    */
-  const initialize = (
-    spp: IBluetoothConnection | null,
-    ble: IBluetoothConnection | null
-  ) =>
+  const initialize = (service: IBluetoothConnection | null) =>
   {
     console.log('📍 GPS: Initializing service...');
 
-    // Store Bluetooth services
-    sppService = spp;
-    bleService = ble;
+    // Store Bluetooth service
+    bluetoothService = service;
 
-    // Register event handlers with Bluetooth services
-    if (sppService)
+    // Register event handlers with Bluetooth service
+    if (bluetoothService)
     {
-      sppService.provideOptions?.({
-        onConnect: handleConnect,
-        onDisconnect: handleDisconnect,
-        onError: handleError,
-        onData: handleDataReceived
-      });
-    }
-
-    if (bleService)
-    {
-      bleService.provideOptions?.({
+      bluetoothService.provideOptions?.({
         onConnect: handleConnect,
         onDisconnect: handleDisconnect,
         onError: handleError,

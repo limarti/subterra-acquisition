@@ -1,31 +1,26 @@
 import type { IGpsTransport } from '../types/IGpsTransport';
 import type { BluetoothDevice } from '@/services/bluetooth/types/BluetoothDevice';
-import type { useBluetoothSPP, useBluetoothBLE } from '@/services/bluetooth/useBluetoothConnection';
+import type { IBluetoothConnection } from '@/services/bluetooth/types/IBluetoothConnection';
 
 /**
  * Bluetooth GPS Transport
  *
- * Implements GPS transport over Bluetooth (SPP and BLE).
- * Wraps existing Bluetooth services and provides GPS-specific interface.
+ * Implements GPS transport over Bluetooth SPP (Serial Port Profile).
+ * Wraps the Bluetooth service and provides GPS-specific interface.
  */
 export class BluetoothGpsTransport implements IGpsTransport
 {
-  private sppService: ReturnType<typeof useBluetoothSPP> | null;
-  private bleService: ReturnType<typeof useBluetoothBLE> | null;
+  private service: IBluetoothConnection | null;
   private connectedDevice: BluetoothDevice | null = null;
 
-  constructor(
-    sppService: ReturnType<typeof useBluetoothSPP> | null,
-    bleService: ReturnType<typeof useBluetoothBLE> | null
-  )
+  constructor(service: IBluetoothConnection | null)
   {
-    if (!sppService && !bleService)
+    if (!service)
     {
-      throw new Error('At least one Bluetooth service (SPP or BLE) must be provided');
+      throw new Error('Bluetooth service must be provided');
     }
 
-    this.sppService = sppService;
-    this.bleService = bleService;
+    this.service = service;
   }
 
   async connect(device: BluetoothDevice): Promise<void>
@@ -35,21 +30,20 @@ export class BluetoothGpsTransport implements IGpsTransport
       throw new Error('No valid GPS device provided');
     }
 
-    const service = device.connectionType === 'SPP' ? this.sppService : this.bleService;
-
-    if (!service)
+    if (!this.service)
     {
-      throw new Error(`${device.connectionType} service not available`);
+      throw new Error('Bluetooth service not available');
     }
 
     this.connectedDevice = device;
     try
     {
-      await service.connect(device.id);
+      await this.service.connect(device.id);
     }
     catch (error)
     {
       this.connectedDevice = null;
+      throw error;
     }
   }
 
@@ -60,44 +54,32 @@ export class BluetoothGpsTransport implements IGpsTransport
       return;
     }
 
-    const service = this.connectedDevice.connectionType === 'SPP' ? this.sppService : this.bleService;
-
-    if (!service)
+    if (!this.service)
     {
-      throw new Error(`${this.connectedDevice.connectionType} service not available`);
+      throw new Error('Bluetooth service not available');
     }
 
-    await service.disconnect();
+    await this.service.disconnect();
     this.connectedDevice = null;
   }
 
   read(): void
   {
-    if (!this.connectedDevice)
+    if (!this.connectedDevice || !this.service)
     {
       return;
     }
 
-    const service = this.connectedDevice.connectionType === 'SPP' ? this.sppService : this.bleService;
-    service?.read();
+    this.service.read();
   }
 
   async listAvailableDevices(): Promise<BluetoothDevice[]>
   {
-    const devices: BluetoothDevice[] = [];
-
-    if (this.sppService)
+    if (!this.service)
     {
-      const sppDevices = await this.sppService.listAvailableDevices();
-      devices.push(...sppDevices);
+      return [];
     }
 
-    if (this.bleService)
-    {
-      const bleDevices = await this.bleService.listAvailableDevices();
-      devices.push(...bleDevices);
-    }
-
-    return devices;
+    return this.service.listAvailableDevices();
   }
 }

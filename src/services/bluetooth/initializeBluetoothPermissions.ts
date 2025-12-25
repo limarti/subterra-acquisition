@@ -1,4 +1,3 @@
-import { BleClient } from '@capacitor-community/bluetooth-le';
 import { Capacitor } from '@capacitor/core';
 
 let isInitialized = false;
@@ -8,13 +7,16 @@ let wasDenied = false;
  * Initializes Bluetooth permissions when needed (lazy initialization).
  * Should be called before scanning for Bluetooth devices or when a configured device exists.
  * This ensures permissions are only requested when the user actually needs Bluetooth functionality.
+ *
+ * Note: The cordova-plugin-bluetooth-classic-serial-port handles permissions internally,
+ * but we trigger initialization by calling list() to request permissions proactively.
  */
 export async function initializeBluetoothPermissions(): Promise<void>
 {
   const platform = Capacitor.getPlatform();
 
-  // Only initialize on mobile platforms
-  if (platform === 'android' || platform === 'ios')
+  // Only initialize on Android (iOS requires MFi certification for SPP)
+  if (platform === 'android')
   {
     // Skip if already initialized successfully
     if (isInitialized)
@@ -24,7 +26,15 @@ export async function initializeBluetoothPermissions(): Promise<void>
 
     try
     {
-      await BleClient.initialize();
+      // Trigger permission request by calling list
+      await new Promise<void>((resolve, reject) =>
+      {
+        bluetoothClassicSerial.list(
+          () => resolve(),
+          (error) => reject(new Error(error))
+        );
+      });
+
       isInitialized = true;
       wasDenied = false;
     }

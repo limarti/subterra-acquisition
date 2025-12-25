@@ -1,8 +1,7 @@
 import { ref } from 'vue';
-import { BleClient } from '@capacitor-community/bluetooth-le';
-import { initializeBluetoothPermissions, wasPermissionDenied } from './initializeBluetoothPermissions';
-import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial';
 import { Capacitor } from '@capacitor/core';
+
+let permissionDenied = false;
 
 export const useBluetoothState = () =>
 {
@@ -10,39 +9,73 @@ export const useBluetoothState = () =>
 
   const checkBluetoothState = async (): Promise<void> =>
   {
-    try
-    {
-      const platform = Capacitor.getPlatform();
+    const platform = Capacitor.getPlatform();
 
-      // Check SPP or BLE for android
-      // For IOS check only BLE
-      if (platform === 'android')
+    if (platform === 'android')
+    {
+      try
       {
-        isBluetoothEnabled.value = await BluetoothSerial.isEnabled() || await BleClient.isEnabled();
+        isBluetoothEnabled.value = await new Promise<boolean>((resolve) =>
+        {
+          bluetoothClassicSerial.isEnabled(
+            () => resolve(true),
+            () => resolve(false)
+          );
+        });
       }
-      else if (platform === 'ios')
+      catch (error)
       {
-        isBluetoothEnabled.value = await BleClient.isEnabled();
-      }
-      else if (platform === 'web')
-      {
-        isBluetoothEnabled.value = true;
+        isBluetoothEnabled.value = false;
       }
     }
-    catch (error)
+    else if (platform === 'web')
     {
+      isBluetoothEnabled.value = true;
+    }
+    else
+    {
+      // iOS not supported for SPP without MFi certification
       isBluetoothEnabled.value = false;
     }
   };
 
   const requestPermissions = async (): Promise<void> =>
   {
-    await initializeBluetoothPermissions();
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android')
+    {
+      try
+      {
+        // The plugin handles permissions internally when calling list/discover
+        // We can trigger permission request by calling list
+        await new Promise<void>((resolve, reject) =>
+        {
+          bluetoothClassicSerial.list(
+            () =>
+            {
+              permissionDenied = false;
+              resolve();
+            },
+            (error) =>
+            {
+              permissionDenied = true;
+              reject(new Error(error));
+            }
+          );
+        });
+      }
+      catch (error)
+      {
+        permissionDenied = true;
+        throw error;
+      }
+    }
   };
 
   const isPermissionDenied = (): boolean =>
   {
-    return wasPermissionDenied();
+    return permissionDenied;
   };
 
   return {

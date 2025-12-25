@@ -1,6 +1,6 @@
 import type { App } from 'vue';
 import { useGpsService } from './useGpsService';
-import { BLUETOOTH_SPP_KEY, BLUETOOTH_BLE_KEY } from '@/services/bluetooth/createBluetoothPlugin';
+import { BLUETOOTH_KEY } from '@/services/bluetooth/createBluetoothPlugin';
 import type { IBluetoothConnection } from '@/services/bluetooth/types/IBluetoothConnection';
 
 export const createGpsPlugin = () =>
@@ -8,19 +8,18 @@ export const createGpsPlugin = () =>
   return {
     install(app: App)
     {
-      // Access Bluetooth services directly from app context
-      const sppService = app._context.provides[BLUETOOTH_SPP_KEY as symbol] as IBluetoothConnection | null;
-      const bleService = app._context.provides[BLUETOOTH_BLE_KEY as symbol] as IBluetoothConnection | null;
+      // Access Bluetooth service directly from app context
+      const bluetoothService = app._context.provides[BLUETOOTH_KEY as symbol] as IBluetoothConnection | null;
 
-      if (!sppService && !bleService)
+      if (!bluetoothService)
       {
-        console.error('📍 GPS Plugin: No Bluetooth services available');
+        console.error('📍 GPS Plugin: No Bluetooth service available');
         return;
       }
 
-      // Initialize GPS service with Bluetooth services
+      // Initialize GPS service with Bluetooth service
       const { initialize } = useGpsService();
-      initialize(sppService, bleService);
+      initialize(bluetoothService);
 
       console.log('📍 GPS: Plugin installed and service initialized');
     }

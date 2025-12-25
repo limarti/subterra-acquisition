@@ -12,10 +12,13 @@
 
       <img src="@/assets/images/logo.svg"
            alt="Logo"
-           class="h-8 select-none mx-3"
-           @touchstart="handleTouchStart"
-           @touchend="handleTouchEnd"
-           @touchcancel="handleTouchEnd">
+           class="h-8 select-none mx-3 cursor-pointer"
+           @touchstart="handlePressStart"
+           @touchend="handlePressEnd"
+           @touchcancel="handlePressEnd"
+           @mousedown="handlePressStart"
+           @mouseup="handlePressEnd"
+           @mouseleave="handlePressEnd">
 
       <div v-if="$slots.left" class="flex items-center h-full">
         <slot name="left" />
@@ -73,7 +76,7 @@
   const longPressTimer = ref<number | null>(null);
   const LONG_PRESS_DURATION = 8000;
 
-  const handleTouchStart = (event: TouchEvent) =>
+  const handlePressStart = (event: TouchEvent | MouseEvent) =>
   {
     if (!featureFlags.enableDebugConsole)
     {
@@ -99,7 +102,7 @@
     }, LONG_PRESS_DURATION);
   };
 
-  const handleTouchEnd = () =>
+  const handlePressEnd = () =>
   {
     if (longPressTimer.value !== null)
     {

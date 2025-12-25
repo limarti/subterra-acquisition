@@ -30,8 +30,8 @@ export class CapacitorBluetoothServerConnection implements IBluetoothConnection
   private connectionListener: PluginListenerHandle | null = null;
   private initialized = false;
   private dataReceivedCount = 0;
-  private restartTimer: ReturnType<typeof setTimeout> | null = null;
   private isRestarting = false;
+  private messageCompleteTimer: ReturnType<typeof setTimeout> | null = null;
 
   provideOptions(options: IBluetoothOptions): void
   {
@@ -111,6 +111,11 @@ export class CapacitorBluetoothServerConnection implements IBluetoothConnection
 
     try
     {
+      if (this.messageCompleteTimer)
+      {
+        clearTimeout(this.messageCompleteTimer);
+        this.messageCompleteTimer = null;
+      }
       await BluetoothCommunication.stopServer();
       this.isServerRunning = false;
       await this.removeDataListener();
@@ -268,9 +273,8 @@ export class CapacitorBluetoothServerConnection implements IBluetoothConnection
 
       this.options.onData?.(uint8Data);
 
-      // After receiving data, try to ensure server is still ready for next connection
-      // Some BT server implementations close after one transfer
-      this.ensureServerReady();
+      // Reset timer on each chunk - restart server 500ms after last chunk
+      this.scheduleMessageComplete();
     });
 
     // Handle both sync and async addListener implementations
@@ -313,100 +317,73 @@ export class CapacitorBluetoothServerConnection implements IBluetoothConnection
   }
 
   /**
-   * Ensure server is ready for next connection
-   * Called after data is received in case the plugin closes the connection
-   *
-   * DEBOUNCED: Multiple rapid calls will only trigger one restart after 1 second of no new data
+   * Schedule server restart 500ms after last data chunk
+   * Treats all data within 500ms as a single message
    */
-  private ensureServerReady(): void
+  private scheduleMessageComplete(): void
   {
-    // Cancel any pending restart - we'll schedule a new one
-    if (this.restartTimer)
+    // Cancel existing timer - new data arrived
+    if (this.messageCompleteTimer)
     {
-      clearTimeout(this.restartTimer);
-      this.restartTimer = null;
+      clearTimeout(this.messageCompleteTimer);
     }
 
-    // If already restarting, don't schedule another
+    this.messageCompleteTimer = setTimeout(() =>
+    {
+      this.messageCompleteTimer = null;
+      log('✅ Message complete (500ms since last chunk)');
+      this.restartServer();
+    }, 500);
+  }
+
+  /**
+   * Restart server to accept next connection
+   */
+  private restartServer(): void
+  {
     if (this.isRestarting)
     {
-      log('⏳ Restart already in progress, skipping');
+      log('⏳ Restart already in progress');
       return;
     }
 
-    // Wait 1 second after last data chunk before restarting
-    // This allows all data chunks to arrive first
-    log('⏳ Scheduling server restart in 1s (debounced)...');
-
-    this.restartTimer = setTimeout(async () =>
+    if (!this.isServerRunning)
     {
-      this.restartTimer = null;
+      log('⚠️ Server not running, skipping restart');
+      return;
+    }
 
-      // Double-check we're not already restarting
-      if (this.isRestarting)
-      {
-        log('⏳ Restart already in progress, skipping');
-        return;
-      }
+    this.isRestarting = true;
 
-      this.isRestarting = true;
-
+    // Run async restart
+    (async () =>
+    {
       try
       {
-        // Check if we need to restart the server
-        if (this.isServerRunning)
-        {
-          log('🔄 Restarting server to accept new connections...');
+        log('🔄 Restarting server...');
 
-          // Try to stop server first
-          try
-          {
-            log('  → Stopping current server...');
-            await BluetoothCommunication.stopServer();
-            log('  → Server stopped');
-          }
-          catch (e)
-          {
-            const stopErr = e instanceof Error ? e.message : String(e);
-            log(`  → Stop error (ignored): ${stopErr}`);
-          }
-
-          // Start server again
-          log('  → Starting server...');
-          await BluetoothCommunication.startServer();
-          log('✅ Server restarted and ready for next connection');
-        }
-        else
+        try
         {
-          log('⚠️ Server not marked as running, skipping restart');
+          await BluetoothCommunication.stopServer();
         }
+        catch (e)
+        {
+          // Ignore stop errors
+        }
+
+        await BluetoothCommunication.startServer();
+        log('✅ Server ready');
       }
       catch (error)
       {
         const errorMsg = error instanceof Error ? error.message : String(error);
-        logError(`❌ Failed to restart server: ${errorMsg}`);
-
-        // Try one more time after another delay
-        setTimeout(async () =>
-        {
-          try
-          {
-            log('🔄 Retry: Starting server...');
-            await BluetoothCommunication.startServer();
-            log('✅ Retry: Server started successfully');
-          }
-          catch (retryError)
-          {
-            const retryMsg = retryError instanceof Error ? retryError.message : String(retryError);
-            logError(`❌ Retry failed: ${retryMsg}`);
-          }
-        }, 1000);
+        logError(`❌ Restart failed: ${errorMsg}`);
       }
       finally
       {
         this.isRestarting = false;
       }
-    }, 1000);
+    })();
   }
 
   private async removeDataListener(): Promise<void>

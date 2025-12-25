@@ -1,7 +1,6 @@
 import { createRouter, createMemoryHistory } from 'vue-router';
 import DashboardView from './features/dashboard/DashboardView.vue';
 import ProjectView from './features/projects/ProjectView.vue';
-import ProjectListView from './features/projects/ProjectListView.vue';
 import SettingsView from './features/settings/SettingsView.vue';
 
 const router = createRouter({
@@ -11,11 +10,6 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: DashboardView,
-    },
-    {
-      path: '/projects',
-      name: 'project-list',
-      component: ProjectListView,
     },
     {
       path: '/project/:idProject',

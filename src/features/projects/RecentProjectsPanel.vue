@@ -1,18 +1,11 @@
 <template>
   <Card :title="$t('dashboard.recentProjects.title')">
     <template #headerRight>
-      <div class="flex items-center gap-2">
-        <button class="p-2 hover:bg-background-darker rounded-md transition-colors cursor-pointer" @click="handleCreateProject">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <button class="p-2 hover:bg-background-darker rounded-md transition-colors cursor-pointer" @click="handleViewAll">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12H21M3 6H21M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </div>
+      <button class="p-2 hover:bg-background-darker rounded-md transition-colors cursor-pointer" @click="handleCreateProject">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
     </template>
     <div class="flex flex-col rounded-b-sm p-4">
       <div v-if="isLoading" class="text-center text-white py-8">
@@ -123,11 +116,6 @@
     {
       show(ToastNotification, { message: t('dashboard.projectCreation.error'), type: ToastType.ERROR });
     }
-  };
-
-  const handleViewAll = () =>
-  {
-    router.push({ name: 'project-list' });
   };
 
   const loadProjects = async () =>

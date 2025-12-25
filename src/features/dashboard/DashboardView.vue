@@ -22,7 +22,7 @@
     <!-- Footer -->
     <div class="h-14 bg-background-lighter relative border-t border-border-gray">
 
-      <IconButton class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2" @click="navigateToProjects">
+      <IconButton class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2" @click="navigateToNewProject">
         <svg width="4rem"
              height="4rem"
              viewBox="0 0 80 80"
@@ -48,9 +48,29 @@
 
   const router = useRouter();
 
-  const navigateToProjects = () =>
+  const navigateToNewProject = async () =>
   {
-    router.push({ name: 'project-list' });
+    const { openDialog } = await import('vue3-promise-dialog');
+    const NewProjectDialog = (await import('./NewProjectDialog.vue')).default;
+    const { useProjectsStorage } = await import('@/features/projects/useProjectsStorage');
+    const { ensureAreasExist } = await import('@/features/projects/projectUtils');
+
+    const result = await openDialog(NewProjectDialog);
+    if (!result) return;
+
+    const { saveProject } = useProjectsStorage();
+    const idProject = crypto.randomUUID();
+    const metadata = ensureAreasExist({
+      id: idProject,
+      name: result.projectName,
+      clientName: result.clientName,
+      jobCode: result.jobCode,
+      dateCreated: Date.now(),
+      areas: []
+    });
+
+    await saveProject(metadata);
+    router.push({ name: 'project', params: { idProject } });
   };
 
   const navigateToSettings = () =>

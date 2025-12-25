@@ -123,7 +123,7 @@
   const shouldShowGpsIndicator = computed(() =>
   {
     const routeName = route.name as string;
-    const showOnRoutes = ['project-list', 'project', 'settings', 'dashboard'];
+    const showOnRoutes = ['project', 'settings', 'dashboard'];
     return showOnRoutes.includes(routeName);
   });
 </script>

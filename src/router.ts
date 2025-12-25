@@ -1,5 +1,4 @@
 import { createRouter, createMemoryHistory } from 'vue-router';
-import WelcomeView from './features/WelcomeView.vue';
 import DashboardView from './features/dashboard/DashboardView.vue';
 import ProjectView from './features/projects/ProjectView.vue';
 import ProjectListView from './features/projects/ProjectListView.vue';
@@ -10,11 +9,6 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'welcome',
-      component: WelcomeView,
-    },
-    {
-      path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
     },

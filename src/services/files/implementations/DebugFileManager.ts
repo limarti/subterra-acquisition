@@ -38,6 +38,32 @@ export class DebugFileManager implements IFileManager
     }
   }
 
+  async append(data: string, filename: string): Promise<void>
+  {
+    try
+    {
+      // Read existing content (if any)
+      let existingContent = '';
+      const existingBase64 = await this.dbHelper.read(filename);
+
+      if (existingBase64)
+      {
+        const existingBytes = base64ToUint8Array(existingBase64);
+        existingContent = new TextDecoder().decode(existingBytes);
+      }
+
+      // Append new data and save
+      const newContent = existingContent + data;
+      const newBase64 = uint8ArrayToBase64(new TextEncoder().encode(newContent));
+      await this.dbHelper.write(filename, newBase64);
+    }
+    catch (error)
+    {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to append to file: ${errorMessage}`);
+    }
+  }
+
   async read(filename: string): Promise<Uint8Array | null>
   {
     try

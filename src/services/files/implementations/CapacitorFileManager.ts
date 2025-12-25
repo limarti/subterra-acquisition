@@ -36,6 +36,31 @@ export class CapacitorFileManager implements IFileManager
     }
   }
 
+  async append(data: string, filename: string): Promise<void>
+  {
+    try
+    {
+      // Extract directory path from filename and ensure it exists
+      const lastSlashIndex = filename.lastIndexOf('/');
+      if (lastSlashIndex > 0)
+      {
+        const dirPath = filename.substring(0, lastSlashIndex);
+        await this.ensureDirectoryExists(dirPath);
+      }
+
+      await Filesystem.appendFile({
+        path: filename,
+        data: data,
+        directory: this.directory,
+      });
+    }
+    catch (error)
+    {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to append to file: ${errorMessage}`);
+    }
+  }
+
   private async ensureDirectoryExists(path: string): Promise<void>
   {
     try

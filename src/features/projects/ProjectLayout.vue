@@ -146,6 +146,7 @@
   import type { ProjectMetadata } from './ProjectMetadata.type';
   import ToastNotification from '@/common/components/ToastNotification.vue';
   import { ToastType } from '@/common/types/ToastType';
+  import { useEmlLogger } from '@/services/eml/useEmlLogger';
 
   const router = useRouter();
   const route = useRoute();
@@ -159,6 +160,9 @@
   const error = ref<string | null>(null);
   const isDeleting = ref(false);
   const isMenuOpen = ref(false);
+
+  // Initialize EML logger - auto-starts when project is loaded
+  useEmlLogger(project);
 
   const idProject = computed(() => route.params.idProject as string);
 

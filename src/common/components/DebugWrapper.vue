@@ -380,7 +380,7 @@
   const startHeight = ref(0);
 
   // Device simulation state
-  const selectedDeviceId = ref<string>('custom');
+  const selectedDeviceId = ref<string>('samsung-s25-ultra');
   const orientation = ref<'portrait' | 'landscape'>('portrait');
 
   const mode = getAppMode();

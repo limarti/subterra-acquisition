@@ -19,7 +19,7 @@
     <div v-else class="col-start-1 flex flex-wrap items-center min-w-0" />
 
     <div class="col-start-2 flex justify-center items-center">
-      <img src="@/assets/images/logo.png"
+      <img src="@/assets/images/logo.svg"
            alt="Logo"
            class="h-8 @md:h-10 select-none"
            @touchstart="handleTouchStart"

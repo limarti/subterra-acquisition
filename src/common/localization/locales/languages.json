@@ -1,7 +1,0 @@
-{
-  "languages": [
-    { "code": "en", "name": "English", "available": true, "flag": "us" },
-    { "code": "es", "name": "Español", "available": true, "flag": "es" }
-  ],
-  "default": "en"
-}

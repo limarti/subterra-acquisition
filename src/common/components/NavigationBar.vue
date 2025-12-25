@@ -1,7 +1,6 @@
 <template>
-  <div class="grid grid-cols-[1fr_auto_1fr] items-center border-t border-b border-border-gray">
-    <div v-if="$slots.left || showBackButton"
-         class="col-start-1 flex items-center min-w-0">
+  <div class="flex items-center justify-between border-t border-b border-border-gray">
+    <div class="flex items-center min-w-0">
       <div v-if="showBackButton" class="flex items-center shrink-0 h-full">
         <button class="p-2 cursor-pointer text-gray-200 hover:text-white transition-colors border-r border-border-gray"
                 @click="emit('back')">
@@ -11,26 +10,20 @@
         </button>
       </div>
 
-      <div class="flex items-center h-full w-full">
+      <img src="@/assets/images/logo.svg"
+           alt="Logo"
+           class="h-8 select-none mx-3"
+           @touchstart="handleTouchStart"
+           @touchend="handleTouchEnd"
+           @touchcancel="handleTouchEnd">
+
+      <div v-if="$slots.left" class="flex items-center h-full">
         <slot name="left" />
       </div>
     </div>
 
-    <div v-else class="col-start-1 flex flex-wrap items-center min-w-0" />
-
-    <div class="col-start-2 flex justify-center items-center">
-      <img src="@/assets/images/logo.svg"
-           alt="Logo"
-           class="h-8 select-none"
-           @touchstart="handleTouchStart"
-           @touchend="handleTouchEnd"
-           @touchcancel="handleTouchEnd">
-    </div>
-
-    <div class="col-start-3 flex items-center justify-end min-w-0">
-
-      <div class="flex flex-wrap justify-end items-center min-w-0 w-full">
-        <!-- Right logo indicators -->
+    <div class="flex items-center justify-end min-w-0">
+      <div class="flex flex-wrap justify-end items-center min-w-0">
         <div v-if="shouldShowGpsIndicator">
           <GpsConnectionIndicator />
         </div>

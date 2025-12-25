@@ -33,28 +33,6 @@
                 </button>
               </div>
 
-              <!-- Language button -->
-              <div class="w-full">
-                <button class="flex items-center cursor-pointer justify-between w-full px-3 py-2 rounded-md border border-border-gray" @click="() => open(LanguageDialog)">
-                  <div class="flex items-center gap-2 text-gray-200">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke="var(--color-accent-primary)" stroke-width="1.5" d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802" />
-                    </svg>
-
-                    {{ $t('settings.language.label') }}
-                  </div>
-
-                  <div class="flex items-center gap-1 text-gray-400">
-                    <img :src="`/images/flags/${userSettingsStore.getCurrentLanguageFlag()}.svg`"
-                         :alt="`${userSettingsStore.getCurrentLanguageFlag()} flag`"
-                         class="w-6 h-6">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 18L15 12L9 6" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </div>
-                </button>
-              </div>
-
             </div>
           </Card>
 
@@ -77,7 +55,6 @@
   import PageTitle from '@/common/components/PageTitle.vue';
   import Card from '@/features/dashboard/Card.vue';
   import UnitsDialog from '@/features/dashboard/UnitsDialog.vue';
-  import LanguageDialog from '@/features/dashboard/LanguageDialog.vue';
   import GpsConnectionPanel from '../gps/GpsConnectionPanel.vue';
   import DownloadLogsPanel from './DownloadLogsPanel.vue';
   import { useUserSettingsStore } from '@/common/stores/useUserSettingsStore';

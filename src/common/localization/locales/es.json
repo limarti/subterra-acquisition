@@ -89,6 +89,8 @@
     "confirmDeleteTitle": "Confirmar Eliminación",
     "confirmDeleteSingle": "¿Estás seguro de que deseas eliminar '{name}'? Esta acción no se puede deshacer.",
     "confirmDeleteMultiple": "¿Estás seguro de que deseas eliminar los {count} elementos seleccionados? Esta acción no se puede deshacer.",
+    "aois": "Áreas de Interés",
+    "aoiNotFound": "Área de interés no encontrada",
     "fields": {
       "name": "Nombre del Proyecto",
       "clientName": "Nombre del Cliente",

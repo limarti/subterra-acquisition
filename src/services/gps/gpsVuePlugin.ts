@@ -1,6 +1,6 @@
 import type { App } from 'vue';
 import { useGpsService } from './useGpsService';
-import { BLUETOOTH_KEY } from '@/services/bluetooth/createBluetoothPlugin';
+import { BLUETOOTH_GPS_KEY } from '@/services/bluetooth/createBluetoothPlugin';
 import type { IBluetoothConnection } from '@/services/bluetooth/types/IBluetoothConnection';
 
 export const createGpsPlugin = () =>
@@ -8,8 +8,8 @@ export const createGpsPlugin = () =>
   return {
     install(app: App)
     {
-      // Access Bluetooth service directly from app context
-      const bluetoothService = app._context.provides[BLUETOOTH_KEY as symbol] as IBluetoothConnection | null;
+      // Access GPS Bluetooth service directly from app context
+      const bluetoothService = app._context.provides[BLUETOOTH_GPS_KEY as symbol] as IBluetoothConnection | null;
 
       if (!bluetoothService)
       {

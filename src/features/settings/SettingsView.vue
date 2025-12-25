@@ -39,6 +39,9 @@
           <!-- GPS Connection -->
           <GpsConnectionPanel />
 
+          <!-- EML Connection -->
+          <EmlConnectionPanel />
+
           <!-- System Logs -->
           <DownloadLogsPanel v-if="featureFlags.showSystemLogs" />
         </MasonryGrid>
@@ -56,6 +59,7 @@
   import Card from '@/features/dashboard/Card.vue';
   import UnitsDialog from '@/features/dashboard/UnitsDialog.vue';
   import GpsConnectionPanel from '../gps/GpsConnectionPanel.vue';
+  import EmlConnectionPanel from '../eml/EmlConnectionPanel.vue';
   import DownloadLogsPanel from './DownloadLogsPanel.vue';
   import { useUserSettingsStore } from '@/common/stores/useUserSettingsStore';
   import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';

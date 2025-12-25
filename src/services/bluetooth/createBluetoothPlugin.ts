@@ -5,7 +5,8 @@ import { CapacitorBluetoothSPPConnection } from './implementations/CapacitorBlue
 import type { IBluetoothConnection } from './types/IBluetoothConnection';
 import { getAppMode } from '@/common/utils/appMode';
 
-const BLUETOOTH_KEY = Symbol('BluetoothConnection');
+const BLUETOOTH_GPS_KEY = Symbol('BluetoothGpsConnection');
+const BLUETOOTH_EML_KEY = Symbol('BluetoothEmlConnection');
 
 export function createBluetoothPlugin()
 {
@@ -15,20 +16,24 @@ export function createBluetoothPlugin()
       const mode = getAppMode();
       const platform = Capacitor.getPlatform();
 
-      let service: IBluetoothConnection | null = null;
+      let gpsService: IBluetoothConnection | null = null;
+      let emlService: IBluetoothConnection | null = null;
 
       if (mode === 'web-preview' || mode === 'debug')
       {
-        service = new SimulatedBluetoothConnection();
+        gpsService = new SimulatedBluetoothConnection();
+        emlService = new SimulatedBluetoothConnection();
       }
       else if (platform === 'android')
       {
-        service = new CapacitorBluetoothSPPConnection();
+        gpsService = new CapacitorBluetoothSPPConnection();
+        emlService = new CapacitorBluetoothSPPConnection();
       }
 
-      app.provide(BLUETOOTH_KEY, service);
+      app.provide(BLUETOOTH_GPS_KEY, gpsService);
+      app.provide(BLUETOOTH_EML_KEY, emlService);
     }
   };
 }
 
-export { BLUETOOTH_KEY };
+export { BLUETOOTH_GPS_KEY, BLUETOOTH_EML_KEY };

@@ -6,7 +6,6 @@
 1. node version manager (nvm)
 2. yarn 1.22.22
 3. Android studio for android simulation
-4. XCode for IOS simulation (only available in Mac)
 
 
 ### Setup
@@ -32,13 +31,6 @@ npm run build
 npm run dev:android
 ```
 This will be opening android studio and start importing the android project after some questions
-
-### Open app in ios (XCode required)
-
-```javascript
-npm run dev:ios
-```
-
 
 ### Run tcp server
 On the project root type

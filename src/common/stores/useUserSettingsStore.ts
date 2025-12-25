@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, readonly } from 'vue';
 import type { BluetoothDevice } from '@/services/bluetooth/types/BluetoothDevice';
 import { GpsConnectionType } from '@/services/gps/types/GpsConnectionType.enum';
+import { EmlConnectionType } from '@/services/eml/types/EmlConnectionType.enum';
 
 export enum Unit
 {
@@ -17,6 +18,8 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
   const units = ref<Unit>(Unit.METERS);
   const selectedBluetoothGpsDevice = ref<BluetoothDevice | null>(null);
   const gpsConnectionType = ref<GpsConnectionType>(GpsConnectionType.BLUETOOTH);
+  const selectedBluetoothEmlDevice = ref<BluetoothDevice | null>(null);
+  const emlConnectionType = ref<EmlConnectionType>(EmlConnectionType.DISABLED);
 
   // ===== PRIVATE HELPERS =====
   const loadFromStorage = (): void =>
@@ -42,6 +45,20 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
       if (savedGpsConnectionType && Object.values(GpsConnectionType).includes(savedGpsConnectionType as GpsConnectionType))
       {
         gpsConnectionType.value = savedGpsConnectionType as GpsConnectionType;
+      }
+
+      // Load selected Bluetooth EML device
+      const savedBluetoothEmlDevice = localStorage.getItem('gla-selected-bluetooth-eml-device');
+      if (savedBluetoothEmlDevice)
+      {
+        selectedBluetoothEmlDevice.value = JSON.parse(savedBluetoothEmlDevice) as BluetoothDevice;
+      }
+
+      // Load EML connection type
+      const savedEmlConnectionType = localStorage.getItem('gla-eml-connection-type');
+      if (savedEmlConnectionType && Object.values(EmlConnectionType).includes(savedEmlConnectionType as EmlConnectionType))
+      {
+        emlConnectionType.value = savedEmlConnectionType as EmlConnectionType;
       }
     }
     catch (error)
@@ -113,6 +130,50 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
     }
   };
 
+  const setSelectedBluetoothEmlDevice = (device: BluetoothDevice | null): void =>
+  {
+    const previousDevice = selectedBluetoothEmlDevice.value;
+
+    try
+    {
+      selectedBluetoothEmlDevice.value = device;
+
+      if (device === null)
+      {
+        localStorage.removeItem('gla-selected-bluetooth-eml-device');
+      }
+      else
+      {
+        localStorage.setItem('gla-selected-bluetooth-eml-device', JSON.stringify(device));
+      }
+    }
+    catch (error)
+    {
+      // Revert on failure
+      selectedBluetoothEmlDevice.value = previousDevice;
+      console.error('Failed to save selected Bluetooth EML device to localStorage:', error);
+      throw error;
+    }
+  };
+
+  const setEmlConnectionType = (type: EmlConnectionType): void =>
+  {
+    const previousType = emlConnectionType.value;
+
+    try
+    {
+      emlConnectionType.value = type;
+      localStorage.setItem('gla-eml-connection-type', type);
+    }
+    catch (error)
+    {
+      // Revert on failure
+      emlConnectionType.value = previousType;
+      console.error('Failed to save EML connection type to localStorage:', error);
+      throw error;
+    }
+  };
+
   loadFromStorage();
 
   return {
@@ -120,10 +181,14 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
     units,
     selectedBluetoothGpsDevice: readonly(selectedBluetoothGpsDevice),
     gpsConnectionType: readonly(gpsConnectionType),
+    selectedBluetoothEmlDevice: readonly(selectedBluetoothEmlDevice),
+    emlConnectionType: readonly(emlConnectionType),
 
     // Actions
     setUnits,
     setSelectedBluetoothGpsDevice,
-    setGpsConnectionType
+    setGpsConnectionType,
+    setSelectedBluetoothEmlDevice,
+    setEmlConnectionType
   };
 });

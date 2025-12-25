@@ -15,7 +15,7 @@ export async function initializeBluetoothPermissions(): Promise<void>
 {
   const platform = Capacitor.getPlatform();
 
-  // Only initialize on Android (iOS requires MFi certification for SPP)
+  // Only initialize on Android
   if (platform === 'android')
   {
     // Skip if already initialized successfully

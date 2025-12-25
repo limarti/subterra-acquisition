@@ -25,7 +25,6 @@ cd Frontend
 **Development:**
 - `npm run dev:web` - Start web development server
 - `npm run dev:android` - Open Android Studio for mobile development
-- `npm run dev:ios` - Open Xcode for iOS development
 
 **Build & Test:**
 - `npm run build` - Build for production (includes mobile sync + Android configuration)
@@ -115,7 +114,7 @@ After ANY file modification (Edit, MultiEdit, Write):
 
 - **Node.js**: 22.14.0 (specified in `.nvmrc`)
 - **Package Manager**: npm (with Node.js 22.14.0)
-- **Mobile Development**: Android Studio + Xcode
+- **Mobile Development**: Android Studio
 - **Build Tool**: Vite with Terser minification
 
 ## Code Style & Guidelines
@@ -197,7 +196,7 @@ For detailed commit guidelines, see the [🚨 COMMIT GUIDELINES - MANDATORY](#-c
 
 ## Mobile Development
 
-- **Target Platforms**: Android and iOS via Capacitor
+- **Target Platforms**: Android via Capacitor
 - **Config**: `capacitor.config.ts` (app ID: `com.gla`)
 - **Build**: `npm run build` automatically syncs mobile platforms
 - **TCP Plugin**: Uses `capacitor-tcp-socket` for direct TCP connections in production

@@ -1,8 +1,0 @@
-# Fastlane Appfile
-# This file contains configuration for the app
-
-app_identifier("com.geolitix.gssi.gla")
-team_id(ENV["APPLE_TEAM_ID"])
-
-# App Store Connect API Key configuration
-# The API key is provided via environment variable as a file path

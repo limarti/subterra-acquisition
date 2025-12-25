@@ -191,6 +191,19 @@
     "connection_type_serial": "Cable serie",
     "connection_type_bluetooth": "Bluetooth"
   },
+  "eml": {
+    "title": "EML",
+    "device": "Dispositivo",
+    "refreshing": "Actualizando...",
+    "refresh_devices": "Actualizar Dispositivos",
+    "paired_devices": "Dispositivos Emparejados",
+    "bluetooth_disabled": "Bluetooth está desactivado",
+    "no_device_selected": "Ningún dispositivo seleccionado",
+    "permission_error": "Se requiere permiso de Bluetooth para conectarse a dispositivos EML.",
+    "permission_denied": "Permiso de Bluetooth denegado",
+    "open_settings": "Abrir Configuración",
+    "connection_type_bluetooth": "Bluetooth"
+  },
   "trigger_mode_distance": "Odómetro",
   "trigger_mode_time": "Tiempo",
   "device": {

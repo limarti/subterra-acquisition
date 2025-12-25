@@ -5,7 +5,7 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
  * Global wake lock management for the entire application
  * - Activates wake lock when app is in foreground/active
  * - Releases wake lock when app goes to background/paused
- * - Only works on mobile platforms (Android/iOS)
+ * - Only works on Android
  */
 export const useAppWakeLock = () =>
 {

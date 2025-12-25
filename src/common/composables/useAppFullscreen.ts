@@ -39,13 +39,6 @@ export function useAppFullscreen()
         await EdgeToEdge.setBackgroundColor({ color: backgroundColor });
         await StatusBar.setStyle({ style: Style.Dark });
       }
-      else if (platform === 'ios')
-      {
-        await StatusBar.setOverlaysWebView({ overlay: false });
-        await StatusBar.setBackgroundColor({ color: backgroundColor });
-        await StatusBar.setStyle({ style: Style.Dark });
-        await StatusBar.show();
-      }
     }
     catch (e)
     {

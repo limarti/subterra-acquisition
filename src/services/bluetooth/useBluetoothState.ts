@@ -32,11 +32,6 @@ export const useBluetoothState = () =>
     {
       isBluetoothEnabled.value = true;
     }
-    else
-    {
-      // iOS not supported for SPP without MFi certification
-      isBluetoothEnabled.value = false;
-    }
   };
 
   const requestPermissions = async (): Promise<void> =>

@@ -209,19 +209,13 @@ function updateAppBuildGradle()
       'versionName project.hasProperty(\'versionName\') ? project.property(\'versionName\') : "1.0"'
     );
 
-    // Add signing configuration if not present
+    // Add release signing configuration if not present (debug uses default Android keystore)
     if (!buildGradle.includes('signingConfigs'))
     {
       // Find the position right after the defaultConfig block closes
-      const insertPosition = buildGradle.indexOf('    }', buildGradle.indexOf('defaultConfig')) + 6; // After closing brace and newline
+      const insertPosition = buildGradle.indexOf('    }', buildGradle.indexOf('defaultConfig')) + 6;
 
       const signingConfigBlock = `    signingConfigs {
-        debug {
-            storeFile file('debug-keystore.jks')
-            storePassword 'android'
-            keyAlias 'debug-key'
-            keyPassword 'android'
-        }
         release {
             if (file(project.hasProperty('uploadStoreFile') ? project.property('uploadStoreFile') : 'upload-keystore.jks').exists()) {
                 storeFile file(project.hasProperty('uploadStoreFile') ? project.property('uploadStoreFile') : 'upload-keystore.jks')
@@ -232,23 +226,23 @@ function updateAppBuildGradle()
         }
     }
 `;
-      
+
       // Insert signing configuration
       buildGradle = buildGradle.slice(0, insertPosition) + signingConfigBlock + buildGradle.slice(insertPosition);
-      
+
       // Replace the entire buildTypes section with corrected structure
       const buildTypesStart = buildGradle.indexOf('buildTypes {');
       let buildTypesEnd = buildTypesStart;
       let braceCount = 0;
       let i = buildTypesStart + 'buildTypes {'.length;
-      
+
       // Find the matching closing brace for buildTypes
-      while (i < buildGradle.length) 
+      while (i < buildGradle.length)
       {
         if (buildGradle[i] === '{') braceCount++;
-        if (buildGradle[i] === '}') 
+        if (buildGradle[i] === '}')
         {
-          if (braceCount === 0) 
+          if (braceCount === 0)
           {
             buildTypesEnd = i + 1;
             break;
@@ -257,16 +251,16 @@ function updateAppBuildGradle()
         }
         i++;
       }
-      
+
       // Skip any trailing whitespace/newlines after the closing brace
-      while (buildTypesEnd < buildGradle.length && /\s/.test(buildGradle[buildTypesEnd])) 
+      while (buildTypesEnd < buildGradle.length && /\s/.test(buildGradle[buildTypesEnd]))
       {
         buildTypesEnd++;
       }
-      
+
       const correctedBuildTypes = `buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            // Uses default Android debug keystore
         }
         release {
             signingConfig signingConfigs.release
@@ -275,11 +269,11 @@ function updateAppBuildGradle()
         }
     }
 `;
-      
+
       // Replace the entire buildTypes section
       buildGradle = buildGradle.slice(0, buildTypesStart) + correctedBuildTypes + buildGradle.slice(buildTypesEnd);
-      
-      console.log('Added signing configuration and corrected buildTypes structure');
+
+      console.log('Added release signing configuration (debug uses default Android keystore)');
     }
 
     fs.writeFileSync(APP_BUILD_GRADLE_PATH, buildGradle);

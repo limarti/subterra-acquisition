@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.geolitix.gssi.gla',
+  appId: 'ar.com.subterra.adquisicion',
   appName: 'GLA',
   webDir: 'dist',
   plugins: {

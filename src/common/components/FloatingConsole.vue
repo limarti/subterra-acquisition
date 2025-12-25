@@ -57,6 +57,12 @@
               NATIVE
             </button>
 
+            <!-- Copy button -->
+            <button class="px-2 py-1 rounded text-xs font-medium bg-gray-600 hover:bg-gray-500 text-white transition-all"
+                    @click="copyLogs">
+              COPY
+            </button>
+
             <!-- Clear button -->
             <button class="px-2 py-1 rounded text-xs font-medium bg-red-600 hover:bg-red-700 text-white transition-all"
                     @click="clearLogs">
@@ -85,7 +91,7 @@
 
         <!-- Logs Container -->
         <div ref="logsContainer"
-             class="overflow-y-auto px-4 py-2 font-mono text-xs"
+             class="overflow-y-auto px-4 pt-2 pb-4 font-mono text-xs"
              :style="{ height: (panelHeight - 45) + 'px' }">
           <div v-if="filteredLogs.length === 0" class="text-gray-500 text-center py-8">
             No logs yet...
@@ -187,6 +193,23 @@
   const clearLogs = () =>
   {
     consoleLogs.value = [];
+  };
+
+  const copyLogs = async () =>
+  {
+    const logsText = filteredLogs.value
+      .map(log => `[${log.time}] [${log.level.toUpperCase()}]${log.source === 'plugin' ? ' [NATIVE]' : ''} ${log.message}`)
+      .join('\n');
+
+    try
+    {
+      await navigator.clipboard.writeText(logsText);
+      console.info('Logs copied to clipboard');
+    }
+    catch (err)
+    {
+      console.error('Failed to copy logs:', err);
+    }
   };
 
   const getLogLevelClass = (level: string) =>

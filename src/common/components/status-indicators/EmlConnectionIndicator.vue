@@ -74,7 +74,10 @@
               <span class="text-sm text-white font-medium">{{ connectedDevice?.name }}</span>
             </div>
             <div class="flex flex-col">
-              <span class="text-[10px] text-gray-500 uppercase">{{ $t('eml.last_received') }}</span>
+              <span class="text-[10px] text-gray-500 uppercase">
+                {{ $t('eml.last_received') }}
+                <span v-if="lastReceivedTime" class="text-gray-600 ml-1">({{ lastReceivedTime }})</span>
+              </span>
               <span class="font-mono text-xs text-white break-all">{{ lastReceivedLine || '-' }}</span>
             </div>
           </template>
@@ -104,12 +107,15 @@
   const isEmlDisabled = computed(() => userSettingsStore.emlConnectionType === EmlConnectionType.DISABLED);
 
   const lastReceivedLine = ref<string>('');
+  const lastReceivedTime = ref<string>('');
 
   let unsubscribe: (() => void) | null = null;
 
   const handleEmlData = (data: string) =>
   {
+    console.log('📊 EML Indicator: Received data:', data.substring(0, 50));
     lastReceivedLine.value = data;
+    lastReceivedTime.value = new Date().toLocaleTimeString();
   };
 
   onMounted(() =>

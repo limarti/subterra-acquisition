@@ -17,12 +17,20 @@ import type { IEmlTransport } from './types/IEmlTransport';
  * - Transport-agnostic: works with any IEmlTransport implementation
  */
 
+// ===== LOGGING =====
+const LOG_PREFIX = '📡 EML:';
+const log = (message: string, ...args: unknown[]) => console.log(`${LOG_PREFIX} ${message}`, ...args);
+const logWarn = (message: string, ...args: unknown[]) => console.warn(`${LOG_PREFIX} ${message}`, ...args);
+const logError = (message: string, ...args: unknown[]) => console.error(`${LOG_PREFIX} ${message}`, ...args);
+
 // ===== MODULE-LEVEL STATE =====
 let reconnectionTimer: number | null = null;
 let reconnectionAttempt = 0;
 let transport: IEmlTransport | null = null;
-let bluetoothService: IBluetoothConnection | null = null;
+let bluetoothClientService: IBluetoothConnection | null = null;
+let bluetoothServerService: IBluetoothConnection | null = null;
 let isChangingDevice = false;
+let isReconnecting = false; // New flag to prevent duplicate reconnection scheduling
 let receivingBuffer = '';
 
 const connectionState = ref<EmlConnectionState>(EmlConnectionState.DISCONNECTED);
@@ -36,7 +44,7 @@ const MAX_RECONNECTION_DELAY = 10000;
 // ===== TRANSPORT FACTORY =====
 const createTransport = (): IEmlTransport =>
 {
-  return new BluetoothEmlTransport(bluetoothService);
+  return new BluetoothEmlTransport(bluetoothClientService, bluetoothServerService);
 };
 
 // ===== EML DATA HANDLING =====
@@ -74,33 +82,40 @@ const handleDataReceived = async (data: Uint8Array) =>
 // ===== TRANSPORT EVENT HANDLERS =====
 const handleConnect = () =>
 {
+  log('Connected/Server ready');
+  isReconnecting = false;
   connectionState.value = EmlConnectionState.CONNECTED;
   transport?.read();
 };
 
 const handleDisconnect = () =>
 {
-  if (connectionState.value === EmlConnectionState.CONNECTED)
-  {
-    connectionState.value = EmlConnectionState.DISCONNECTED;
-    connectedDevice.value = null;
-  }
+  // In server mode, the RD8100 connects momentarily to send data then disconnects
+  // This is normal behavior - don't change state or trigger reconnection
+  // The server stays running and ready for the next connection
+  log('Device disconnected (server still running)');
+
+  // Only change state if we're actually shutting down (not in server mode)
+  // For now, keep the connected state since the server is still listening
 };
 
 const handleError = (error: Error) =>
 {
-  console.error('📡 EML: Transport error', error);
-  connectionState.value = EmlConnectionState.DISCONNECTED;
-  connectedDevice.value = null;
+  logError('Transport error:', error.message);
+  // Don't change state here - let the connection attempt handle it
+  // This prevents duplicate state changes and watcher triggers
 };
 
 // ===== CONNECTION MANAGEMENT =====
 const connectToDevice = async (device: BluetoothDevice) =>
 {
+  log(`Connecting to device: ${device.name || 'Unknown'} (${device.id})`);
+
   try
   {
     if (!transport)
     {
+      log('Creating new transport');
       transport = createTransport();
     }
 
@@ -108,10 +123,12 @@ const connectToDevice = async (device: BluetoothDevice) =>
     await transport.connect(device);
     connectedDevice.value = device;
     reconnectionAttempt = 0;
+    log('Connection established');
   }
   catch (error)
   {
-    console.error('📡 EML: Connection failed', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logError(`Connection failed to ${device.name || device.id}: ${errorMessage}`);
     connectionState.value = EmlConnectionState.DISCONNECTED;
     throw error;
   }
@@ -119,14 +136,17 @@ const connectToDevice = async (device: BluetoothDevice) =>
 
 const disconnect = async () =>
 {
+  log('Disconnecting...');
   try
   {
     await transport?.disconnect();
     receivingBuffer = '';
+    log('Disconnected successfully');
   }
   catch (error)
   {
-    console.error('📡 EML: Disconnect failed', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logError(`Disconnect failed: ${errorMessage}`);
     throw error;
   }
   finally
@@ -148,31 +168,52 @@ const getReconnectionDelay = (attempt: number): number =>
 
 const cancelReconnection = () =>
 {
-  if (reconnectionTimer !== null)
+  if (reconnectionTimer !== null || isReconnecting)
   {
-    clearTimeout(reconnectionTimer);
+    log('Cancelling reconnection (timer:', reconnectionTimer !== null, ', isReconnecting:', isReconnecting, ')');
+    clearTimeout(reconnectionTimer!);
     reconnectionTimer = null;
     reconnectionAttempt = 0;
+    isReconnecting = false;
   }
 };
 
 const scheduleReconnection = (device: BluetoothDevice) =>
 {
-  if (!device) return;
+  if (!device)
+  {
+    logWarn('Cannot schedule reconnection: no device');
+    return;
+  }
 
+  // Prevent duplicate scheduling
+  if (isReconnecting)
+  {
+    log('Reconnection already in progress, skipping duplicate schedule');
+    return;
+  }
+
+  isReconnecting = true;
   const delay = getReconnectionDelay(reconnectionAttempt);
+
+  log(`Scheduling reconnection attempt ${reconnectionAttempt + 1} in ${delay}ms to ${device.name || device.id}`);
 
   reconnectionTimer = window.setTimeout(async () =>
   {
     reconnectionTimer = null;
     reconnectionAttempt++;
 
+    log(`Reconnection attempt ${reconnectionAttempt} starting...`);
+
     try
     {
       await connectToDevice(device);
+      // Success - isReconnecting will be reset in handleConnect
     }
     catch (error)
     {
+      // Reset flag to allow next schedule, but keep reconnectionAttempt for backoff
+      isReconnecting = false;
       scheduleReconnection(device);
     }
   }, delay);
@@ -186,22 +227,40 @@ export const useEmlService = () =>
   /**
    * Initialize EML service
    *
-   * Sets up Bluetooth service, watchers, and auto-connect logic.
+   * Sets up Bluetooth services, watchers, and auto-connect logic.
    * Called automatically by EML plugin at app startup.
    *
-   * @param service - Bluetooth service (may be null if unavailable)
+   * @param clientService - Bluetooth client service for SPP connections (may be null)
+   * @param serverService - Bluetooth server service for listening mode (may be null)
    */
-  const initialize = (service: IBluetoothConnection | null) =>
+  const initialize = (
+    clientService: IBluetoothConnection | null,
+    serverService: IBluetoothConnection | null = null
+  ) =>
   {
-    console.log('📡 EML: Initializing service...');
+    log('Initializing service...');
+    log(`Client service: ${clientService ? 'available' : 'not available'}`);
+    log(`Server service: ${serverService ? 'available' : 'not available'}`);
 
-    // Store Bluetooth service
-    bluetoothService = service;
+    // Store Bluetooth services
+    bluetoothClientService = clientService;
+    bluetoothServerService = serverService;
 
-    // Register event handlers with Bluetooth service
-    if (bluetoothService)
+    // Register event handlers with client service
+    if (bluetoothClientService)
     {
-      bluetoothService.provideOptions?.({
+      bluetoothClientService.provideOptions?.({
+        onConnect: handleConnect,
+        onDisconnect: handleDisconnect,
+        onError: handleError,
+        onData: handleDataReceived
+      });
+    }
+
+    // Register event handlers with server service
+    if (bluetoothServerService)
+    {
+      bluetoothServerService.provideOptions?.({
         onConnect: handleConnect,
         onDisconnect: handleDisconnect,
         onError: handleError,
@@ -213,11 +272,13 @@ export const useEmlService = () =>
       () => userSettingsStore.emlConnectionType,
       async (newType) =>
       {
+        log('Connection type changed to:', newType);
         isChangingDevice = true;
         cancelReconnection();
 
         if (newType === EmlConnectionType.DISABLED)
         {
+          log('EML disabled, disconnecting if connected');
           if (connectedDevice.value)
           {
             try
@@ -226,7 +287,7 @@ export const useEmlService = () =>
             }
             catch (error)
             {
-              console.error('📡 EML: Failed to disconnect when disabling EML', error);
+              logError('Failed to disconnect when disabling EML:', error);
             }
           }
         }
@@ -236,6 +297,7 @@ export const useEmlService = () =>
 
           if (device)
           {
+            log('EML enabled, connecting to saved device:', device.name || device.id);
             try
             {
               await connectToDevice(device);
@@ -244,6 +306,10 @@ export const useEmlService = () =>
             {
               scheduleReconnection(device);
             }
+          }
+          else
+          {
+            log('EML enabled but no device selected');
           }
         }
 
@@ -257,8 +323,14 @@ export const useEmlService = () =>
       () => userSettingsStore.selectedBluetoothEmlDevice,
       async (newDevice, oldDevice) =>
       {
+        log('Device selection changed:', oldDevice?.name || oldDevice?.id || 'none', '→', newDevice?.name || newDevice?.id || 'none');
+
         // Only handle device changes if EML is not disabled
-        if (userSettingsStore.emlConnectionType === EmlConnectionType.DISABLED) return;
+        if (userSettingsStore.emlConnectionType === EmlConnectionType.DISABLED)
+        {
+          log('EML is disabled, ignoring device change');
+          return;
+        }
 
         isChangingDevice = true;
         cancelReconnection();
@@ -272,13 +344,14 @@ export const useEmlService = () =>
         // Disconnect from old device first (if connected)
         if (oldDevice !== undefined && connectedDevice.value)
         {
+          log('Disconnecting from previous device:', oldDevice?.name || oldDevice?.id);
           try
           {
             await disconnect();
           }
           catch (error)
           {
-            console.error('📡 EML: Failed to disconnect from previous device', error);
+            logError('Failed to disconnect from previous device:', error);
           }
         }
 
@@ -296,7 +369,7 @@ export const useEmlService = () =>
         }
         else
         {
-          console.log('📡 EML: No device selected, staying disconnected');
+          log('No device selected, staying disconnected');
           connectionState.value = EmlConnectionState.DISCONNECTED;
         }
 
@@ -310,20 +383,25 @@ export const useEmlService = () =>
       () => connectionState.value,
       (newState) =>
       {
+        log('Connection state changed to:', newState, '(isChangingDevice:', isChangingDevice, ', isReconnecting:', isReconnecting, ')');
+
         // Only auto-reconnect if EML is not disabled
         if (userSettingsStore.emlConnectionType === EmlConnectionType.DISABLED) return;
 
         const device = userSettingsStore.selectedBluetoothEmlDevice;
 
-        if (newState === EmlConnectionState.DISCONNECTED && device && !reconnectionTimer && !isChangingDevice)
+        // Use isReconnecting flag instead of just checking reconnectionTimer
+        // This prevents duplicate reconnection scheduling
+        if (newState === EmlConnectionState.DISCONNECTED && device && !isReconnecting && !isChangingDevice)
         {
+          log('Unexpected disconnection detected, starting reconnection');
           reconnectionAttempt = 0;
           scheduleReconnection(device);
         }
       }
     );
 
-    console.log('📡 EML: Service initialized');
+    log('Service initialized');
   };
 
   /**

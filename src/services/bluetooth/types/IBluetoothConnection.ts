@@ -10,4 +10,9 @@ export interface IBluetoothConnection
   disconnect(): Promise<void>;
   provideOptions?(options: IBluetoothOptions): void;
   listAvailableDevices(): Promise<BluetoothDevice[]>;
+
+  // Optional server mode methods (for devices that connect TO the phone)
+  startServer?(): Promise<void>;
+  stopServer?(): Promise<void>;
+  isServerActive?(): boolean;
 }

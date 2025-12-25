@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-[1fr_auto_1fr] items-center border-t border-b">
+  <div class="grid grid-cols-[1fr_auto_1fr] items-center border-t border-b border-border-gray">
     <div v-if="$slots.left || showBackButton"
          class="col-start-1 flex items-center min-w-0">
       <div v-if="showBackButton" class="flex items-center shrink-0 h-full">

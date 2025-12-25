@@ -3,23 +3,22 @@
 
 @theme {
 
-  --color-background-lighter-lighter: #2b4a67;
-  --color-background-lighter: #1d354a;
-  --color-background: #152939;
-  --color-background-darker: #152431;
-  --color-background-darker-darker: #0f1c25;
+  --color-background-lighter-lighter: #2a2a2a;
+  --color-background-lighter: #1a1a1a;
+  --color-background: #0d0d0d;
+  --color-background-darker: #080808;
+  --color-background-darker-darker: #040404;
 
-  --color-accent-primary: #fa7a4f;
-  --color-accent-attention: #dfca5f;
-  --color-accent-info: #579fcd;
+  --color-accent-primary: #ffffff;
+  --color-accent-attention: #e0e0e0;
+  --color-accent-info: #b0b0b0;
 
-  --color-toolbar-blue: rgba(10, 65, 104, 0.8);
-  --color-toolbar-blue-hover: rgba(0, 0, 0, 0.2);
+  --color-toolbar-dark: rgba(20, 20, 20, 0.9);
+  --color-toolbar-dark-hover: rgba(255, 255, 255, 0.1);
 
   --color-text-secondary: rgba(255, 255, 255, 0.5);
 
-  --color-border-gray: #45525a;
-  --color-border-card: rgba(69, 82, 90, 1);
+  --color-border-gray: #444444;
   --color-border-toolbar: rgba(255, 255, 255, 0.8);
 }
 

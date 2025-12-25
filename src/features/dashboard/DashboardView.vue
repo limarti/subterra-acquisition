@@ -28,8 +28,8 @@
              viewBox="0 0 80 80"
              fill="none"
              xmlns="http://www.w3.org/2000/svg">
-          <rect x="37.9507" y="27.0371" width="3.85195" height="25.9536" fill="var(--vt-c-white)" />
-          <rect x="27.0371" y="41.96" width="3.89304" height="25.6796" transform="rotate(-90 27.0371 41.96)" fill="var(--vt-c-white)" />
+          <rect x="37.9507" y="27.0371" width="3.85195" height="25.9536" fill="black" />
+          <rect x="27.0371" y="41.96" width="3.89304" height="25.6796" transform="rotate(-90 27.0371 41.96)" fill="black" />
         </svg>
       </IconButton>
 

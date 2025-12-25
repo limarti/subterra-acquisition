@@ -5,15 +5,9 @@
        ]"
        @click="handleClick">
     <div class="relative w-full h-full">
-      <!-- Dark background layer -->
-      <div class="absolute w-full h-full rounded-full bg-gray-500" />
-
-      <!-- Button layers with opacity when disabled -->
       <div :class="disabled ? 'opacity-50' : ''">
-        <div :class="['absolute w-full h-full rounded-full bg-accent-primary']" />
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-black" />
-        <div :class="['absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-accent-primary']" />
-        <div :class="['absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2']">
+        <div class="absolute w-full h-full rounded-full bg-accent-primary" />
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <slot />
         </div>
       </div>

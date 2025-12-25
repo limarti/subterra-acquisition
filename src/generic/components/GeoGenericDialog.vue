@@ -3,7 +3,7 @@
     <div class="bg-background-lighter dialog-slide border-t-1 border-x-1 mx-4 border-border-gray rounded-t-md max-h-[calc(100%-1rem)] shadow-[0_-8px_48px_0_rgba(0,0,0,0.5)] w-100 flex flex-col" @click.stop>
 
       <!-- header -->
-      <div class="flex justify-start items-center p-4 border-b-1 shrink-0">
+      <div class="flex justify-start items-center p-4 border-b-1 border-border-gray shrink-0">
         <div class="flex items-center">
           <slot name="icon" />
         </div>

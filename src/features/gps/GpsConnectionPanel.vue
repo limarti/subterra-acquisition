@@ -10,10 +10,6 @@
                 @click="handleConnectionTypeChange(GpsConnectionType.DISABLED)">
           {{ $t('common.disabled') }}
         </button>
-        <button class="btn-selector opacity-50 btn-selector-disabled"
-                :disabled="true">
-          {{ $t('gps.connection_type_serial') }}
-        </button>
         <button class="btn-selector"
                 :class="connectionType === GpsConnectionType.BLUETOOTH ? 'btn-selector-active' : 'btn-selector-inactive'"
                 @click="handleConnectionTypeChange(GpsConnectionType.BLUETOOTH)">
@@ -23,7 +19,7 @@
 
       <template v-if="connectionType === GpsConnectionType.BLUETOOTH">
         <div class="w-full">
-          <button class="flex items-center cursor-pointer justify-between w-full px-3 py-2 rounded-md border"
+          <button class="flex items-center cursor-pointer justify-between w-full px-3 py-2 rounded-md border border-border-gray"
                   @click="() => open(GpsConnectionDialog)">
             <div class="flex items-center gap-2 text-gray-200">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

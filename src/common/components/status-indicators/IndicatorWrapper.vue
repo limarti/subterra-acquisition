@@ -3,7 +3,7 @@
              offsetDistance="0"
              :offsetSkidding="0">
     <button type="button"
-            class="p-2 @md:p-5 flex justify-center items-center transition-colors duration-200 border-l border-border-gray cursor-pointer hover:bg-toolbar-blue-hover"
+            class="p-2 @md:p-5 flex justify-center items-center transition-colors duration-200 border-l border-border-gray cursor-pointer hover:bg-toolbar-dark-hover"
             :aria-label="buttonAriaLabel">
       <slot name="icon" />
     </button>

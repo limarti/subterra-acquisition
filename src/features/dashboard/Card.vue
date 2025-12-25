@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col rounded-md border border-border-card overflow-hidden bg-background-darker">
-    <div class="flex items-center justify-between h-15 w-full bg-background-lighter rounded-t-sm p-4 border-b-1 border-border-card">
+  <div class="flex flex-col rounded-md border border-border-gray overflow-hidden bg-background-darker">
+    <div class="flex items-center justify-between h-15 w-full bg-background-lighter rounded-t-sm p-4 border-b-1 border-border-gray">
       <span class="text-white text-xl font-semibold">{{ title }}</span>
       <slot name="headerRight" />
     </div>

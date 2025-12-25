@@ -4,7 +4,7 @@
 
       <!-- Download Logs button -->
       <div class="w-full">
-        <button class="flex items-center cursor-pointer justify-between w-full px-3 py-2 rounded-md border"
+        <button class="flex items-center cursor-pointer justify-between w-full px-3 py-2 rounded-md border border-border-gray"
                 :class="{ 'opacity-50': isDownloading }"
                 :disabled="isDownloading"
                 @click="handleDownloadLogs">

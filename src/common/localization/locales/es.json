@@ -202,7 +202,8 @@
     "permission_error": "Se requiere permiso de Bluetooth para conectarse a dispositivos EML.",
     "permission_denied": "Permiso de Bluetooth denegado",
     "open_settings": "Abrir Configuración",
-    "connection_type_bluetooth": "Bluetooth"
+    "connection_type_bluetooth": "Bluetooth",
+    "last_received": "Último recibido"
   },
   "trigger_mode_distance": "Odómetro",
   "trigger_mode_time": "Tiempo",

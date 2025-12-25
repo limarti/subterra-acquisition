@@ -24,6 +24,9 @@
 
     <div class="flex items-center justify-end min-w-0">
       <div class="flex flex-wrap justify-end items-center min-w-0">
+        <div v-if="shouldShowEmlIndicator">
+          <EmlConnectionIndicator />
+        </div>
         <div v-if="shouldShowGpsIndicator">
           <GpsConnectionIndicator />
         </div>
@@ -45,6 +48,7 @@
   import { Haptics, ImpactStyle } from '@capacitor/haptics';
   import { getFeatureFlags } from '@/common/utils/featureFlags';
   import GpsConnectionIndicator from './status-indicators/GpsConnectionIndicator.vue';
+  import EmlConnectionIndicator from './status-indicators/EmlConnectionIndicator.vue';
 
   interface Props
   {
@@ -114,6 +118,13 @@
   });
 
   const shouldShowGpsIndicator = computed(() =>
+  {
+    const routeName = route.name as string;
+    const showOnRoutes = ['project', 'settings', 'dashboard'];
+    return showOnRoutes.includes(routeName);
+  });
+
+  const shouldShowEmlIndicator = computed(() =>
   {
     const routeName = route.name as string;
     const showOnRoutes = ['project', 'settings', 'dashboard'];

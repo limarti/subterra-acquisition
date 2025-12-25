@@ -5,17 +5,10 @@
         <template v-if="isGpsDisabled">
           <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke-width="1.5"
-               stroke="gray"
+               viewBox="0 0 48 48"
+               fill="gray"
                opacity="0.5">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            <path d="M24 16c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm17.88 6C40.96 13.66 34.34 7.04 26 6.12V2h-4v4.12C13.66 7.04 7.04 13.66 6.12 22H2v4h4.12c.92 8.34 7.54 14.96 15.88 15.88V46h4v-4.12c8.34-.92 14.96-7.54 15.88-15.88H46v-4h-4.12zM24 38c-7.73 0-14-6.27-14-14s6.27-14 14-14 14 6.27 14 14-6.27 14-14 14z" />
           </svg>
         </template>
 
@@ -23,16 +16,9 @@
         <template v-else-if="connectionState === GpsConnectionState.CONNECTED && isRtkFix && !isPositionStale">
           <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke-width="1.5"
-               stroke="white">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+               viewBox="0 0 48 48"
+               fill="white">
+            <path d="M24 16c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm17.88 6C40.96 13.66 34.34 7.04 26 6.12V2h-4v4.12C13.66 7.04 7.04 13.66 6.12 22H2v4h4.12c.92 8.34 7.54 14.96 15.88 15.88V46h4v-4.12c8.34-.92 14.96-7.54 15.88-15.88H46v-4h-4.12zM24 38c-7.73 0-14-6.27-14-14s6.27-14 14-14 14 6.27 14 14-6.27 14-14 14z" />
           </svg>
           <div class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full" />
         </template>
@@ -41,16 +27,9 @@
         <template v-else-if="connectionState === GpsConnectionState.CONNECTED && hasValidPosition && !isPositionStale">
           <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke-width="1.5"
-               stroke="white">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+               viewBox="0 0 48 48"
+               fill="white">
+            <path d="M24 16c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm17.88 6C40.96 13.66 34.34 7.04 26 6.12V2h-4v4.12C13.66 7.04 7.04 13.66 6.12 22H2v4h4.12c.92 8.34 7.54 14.96 15.88 15.88V46h4v-4.12c8.34-.92 14.96-7.54 15.88-15.88H46v-4h-4.12zM24 38c-7.73 0-14-6.27-14-14s6.27-14 14-14 14 6.27 14 14-6.27 14-14 14z" />
           </svg>
           <div class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-500 rounded-full" />
         </template>
@@ -59,31 +38,24 @@
         <template v-else>
           <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke-width="1.5"
-               stroke="white">
+               viewBox="0 0 48 48"
+               fill="white">
             <g class="animate-flashy-opacity">
-              <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              <path d="M24 16c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm17.88 6C40.96 13.66 34.34 7.04 26 6.12V2h-4v4.12C13.66 7.04 7.04 13.66 6.12 22H2v4h4.12c.92 8.34 7.54 14.96 15.88 15.88V46h4v-4.12c8.34-.92 14.96-7.54 15.88-15.88H46v-4h-4.12zM24 38c-7.73 0-14-6.27-14-14s6.27-14 14-14 14 6.27 14 14-6.27 14-14 14z" />
             </g>
-            <line x1="3"
-                  y1="21"
-                  x2="21"
-                  y2="3"
+            <line x1="6"
+                  y1="42"
+                  x2="42"
+                  y2="6"
                   stroke="var(--color-background)"
-                  stroke-width="4"
+                  stroke-width="8"
                   stroke-linecap="round" />
-            <line x1="3"
-                  y1="21"
-                  x2="21"
-                  y2="3"
+            <line x1="6"
+                  y1="42"
+                  x2="42"
+                  y2="6"
                   stroke="red"
-                  stroke-width="2"
+                  stroke-width="4"
                   stroke-linecap="round" />
           </svg>
         </template>

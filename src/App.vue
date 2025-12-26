@@ -1,7 +1,7 @@
 <template>
   <DebugWrapper>
     <div class="h-full w-full bg-background @container mx-auto font-normal">
-      <RouterView v-slot="{ Component, route }">
+      <RouterView v-slot="{ Component }">
         <Transition mode="out-in"
                     enterActiveClass="transition-opacity duration-300"
                     enterFromClass="opacity-0"
@@ -9,7 +9,7 @@
                     leaveActiveClass="transition-opacity duration-200"
                     leaveFromClass="opacity-100"
                     leaveToClass="opacity-0">
-          <component :is="Component" :key="route.path + JSON.stringify(route.query)" />
+          <component :is="Component" />
         </Transition>
 
         <DialogWrapper :transitionAttrs="{

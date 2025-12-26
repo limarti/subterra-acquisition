@@ -123,14 +123,16 @@
   const shouldShowGpsIndicator = computed(() =>
   {
     const routeName = route.name as string;
-    const showOnRoutes = ['project', 'settings', 'dashboard'];
-    return showOnRoutes.includes(routeName);
+    return routeName === 'settings' ||
+           routeName === 'dashboard' ||
+           routeName.startsWith('project');
   });
 
   const shouldShowEmlIndicator = computed(() =>
   {
     const routeName = route.name as string;
-    const showOnRoutes = ['project', 'settings', 'dashboard'];
-    return showOnRoutes.includes(routeName);
+    return routeName === 'settings' ||
+           routeName === 'dashboard' ||
+           routeName.startsWith('project');
   });
 </script>

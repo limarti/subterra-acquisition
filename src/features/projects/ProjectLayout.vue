@@ -94,6 +94,24 @@
             <!-- Divider -->
             <div class="border-t border-border-gray my-2" />
 
+            <!-- Share project -->
+            <button type="button"
+                    class="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-background-lighter rounded transition-colors"
+                    :class="{ 'opacity-50': isSharing }"
+                    :disabled="isSharing"
+                    @click="isMenuOpen = false; handleProjectShare();">
+              <svg v-if="isSharing" class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                <polyline points="16 6 12 2 8 6" />
+                <line x1="12" y1="2" x2="12" y2="15" />
+              </svg>
+              {{ $t('project.shareProject') }}
+            </button>
+
             <!-- Delete project -->
             <button type="button"
                     class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-background-lighter rounded transition-colors"
@@ -150,10 +168,15 @@
   import { ref, onMounted, computed } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import { useI18n } from 'vue-i18n';
+  import { Capacitor } from '@capacitor/core';
+  import { Share } from '@capacitor/share';
+  import { Filesystem, Directory } from '@capacitor/filesystem';
+  import JSZip from 'jszip';
   import NavigationBar from '@/common/components/NavigationBar.vue';
   import PageTitle from '@/common/components/PageTitle.vue';
   import GeoConfirmationDialog from '@/generic/components/GeoConfirmationDialog.vue';
   import { useProjectsStorage } from './useProjectsStorage';
+  import { useFileManager } from '@/services/files/composables/useFileManager';
   import { useDialog } from '@/generic/composables/useDialog';
   import { useToast } from '@/common/composables/useToast';
   import { provideProjectContext } from './useProjectContext';
@@ -161,6 +184,8 @@
   import ToastNotification from '@/common/components/ToastNotification.vue';
   import { ToastType } from '@/common/types/ToastType';
   import { useEmlLogger } from '@/services/eml/useEmlLogger';
+  import { uint8ArrayToBase64 } from '@/services/files/utils/base64';
+  import { downloadBlobAsFile } from '@/common/utils/downloadBlobAsFile';
 
   const router = useRouter();
   const route = useRoute();
@@ -168,11 +193,13 @@
   const { open } = useDialog();
   const { getProject, saveProject: saveProjectToStorage, deleteProject } = useProjectsStorage();
   const { show } = useToast();
+  const fileManager = useFileManager();
 
   const project = ref<ProjectMetadata | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const isDeleting = ref(false);
+  const isSharing = ref(false);
   const isMenuOpen = ref(false);
 
   // Initialize EML logger - auto-starts when project is loaded
@@ -287,6 +314,95 @@
     finally
     {
       isDeleting.value = false;
+    }
+  };
+
+  const handleProjectShare = async () =>
+  {
+    if (!project.value || isSharing.value) return;
+
+    isSharing.value = true;
+
+    try
+    {
+      const zip = new JSZip();
+      const projectPath = `projects/${idProject.value}`;
+
+      // Get list of files in project directory
+      let files: string[] = [];
+
+      try
+      {
+        files = await fileManager.listDirectory(projectPath);
+      }
+      catch
+      {
+        // Directory might not exist or be empty
+        files = [];
+      }
+
+      // Add each file to the zip
+      for (const filename of files)
+      {
+        try
+        {
+          const filePath = `${projectPath}/${filename}`;
+          const fileData = await fileManager.read(filePath);
+
+          if (fileData)
+          {
+            zip.file(filename, fileData);
+          }
+        }
+        catch (err)
+        {
+          console.warn(`Failed to read file ${filename}:`, err);
+        }
+      }
+
+      // Generate zip as Uint8Array
+      const zipData = await zip.generateAsync({ type: 'uint8array' });
+      const sanitizedName = project.value.name.replace(/[^a-zA-Z0-9-_]/g, '_');
+      const filename = `${sanitizedName}.zip`;
+
+      if (Capacitor.isNativePlatform())
+      {
+        const base64Data = uint8ArrayToBase64(zipData);
+
+        const writeResult = await Filesystem.writeFile({
+          path: filename,
+          data: base64Data,
+          directory: Directory.Cache,
+        });
+
+        try
+        {
+          await Share.share({
+            files: [writeResult.uri],
+          });
+        }
+        catch
+        {
+          // User dismissed share dialog - not an error
+        }
+      }
+      else
+      {
+        const blob = new Blob([zipData.buffer as ArrayBuffer], { type: 'application/zip' });
+        downloadBlobAsFile(blob, filename);
+      }
+    }
+    catch (err)
+    {
+      console.error('Failed to share project:', err);
+      show(ToastNotification, {
+        message: t('project.shareError'),
+        type: ToastType.ERROR
+      });
+    }
+    finally
+    {
+      isSharing.value = false;
     }
   };
 

@@ -71,6 +71,7 @@
     "add_scan": "Agregar Datos",
     "share": "Compartir",
     "shareProject": "Compartir Proyecto",
+    "shareError": "Error al compartir el proyecto",
     "deleteProject": "Eliminar Proyecto",
     "projectActions": "Acciones del proyecto",
     "exporting": "Exportando",

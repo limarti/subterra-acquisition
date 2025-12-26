@@ -135,7 +135,7 @@
     </Transition>
 
     <!-- Main content -->
-    <div class="flex-1 min-h-0 overflow-hidden">
+    <div class="flex-1 min-h-0 overflow-hidden relative z-0">
       <div v-if="isLoading" class="flex items-center justify-center h-full">
         <p class="text-text-secondary">
           {{ $t('project.loading') }}

@@ -10,7 +10,7 @@
         </button>
       </div>
 
-      <img src="@/assets/images/logo.svg"
+      <img :src="currentLogo"
            alt="Logo"
            class="h-8 select-none mx-3 cursor-pointer"
            @touchstart="handlePressStart"
@@ -52,6 +52,8 @@
   import { getFeatureFlags } from '@/common/utils/featureFlags';
   import GpsConnectionIndicator from './status-indicators/GpsConnectionIndicator.vue';
   import EmlConnectionIndicator from './status-indicators/EmlConnectionIndicator.vue';
+  import logoFull from '@/assets/images/logo.svg';
+  import logoShort from '@/assets/images/logo-short.svg';
 
   interface Props
   {
@@ -118,6 +120,13 @@
     {
       clearTimeout(longPressTimer.value);
     }
+  });
+
+  const currentLogo = computed(() =>
+  {
+    const routeName = route.name as string;
+    const useFullLogo = routeName === 'settings' || routeName === 'dashboard';
+    return useFullLogo ? logoFull : logoShort;
   });
 
   const shouldShowGpsIndicator = computed(() =>

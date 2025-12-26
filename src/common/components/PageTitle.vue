@@ -1,5 +1,5 @@
 <template>
-  <div class="px-3 flex flex-col w-full min-w-0">
+  <div class="flex flex-col w-full min-w-0">
     <span v-if="label" class="text-sm text-white font-medium">
       {{ label }}
     </span>

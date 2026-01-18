@@ -4,7 +4,6 @@ import type { NmeaGgaData } from './types/NmeaGgaData.type';
 import type { BluetoothDevice } from '@/services/bluetooth/types/BluetoothDevice';
 import type { IBluetoothConnection } from '@/services/bluetooth/types/IBluetoothConnection';
 import { GpsConnectionState } from './types/GpsConnectionState.enum';
-import { GpsConnectionType } from './types/GpsConnectionType.enum';
 import { parseNmeaGga, extractNmeaSentences } from './utils/nmeaParser';
 import { BluetoothGpsTransport } from './transports/BluetoothGpsTransport';
 import type { IGpsTransport } from './types/IGpsTransport';
@@ -25,6 +24,7 @@ let reconnectionAttempt = 0;
 let transport: IGpsTransport | null = null;
 let bluetoothService: IBluetoothConnection | null = null;
 let isChangingDevice = false;
+let isConnecting = false;
 let receivingBuffer = '';
 
 const connectionState = ref<GpsConnectionState>(GpsConnectionState.DISCONNECTED);
@@ -117,6 +117,14 @@ const handleError = (error: Error) =>
 // ===== CONNECTION MANAGEMENT =====
 const connectToDevice = async (device: BluetoothDevice) =>
 {
+  if (isConnecting)
+  {
+    console.warn('📍 GPS: Connection already in progress');
+    return;
+  }
+
+  isConnecting = true;
+
   try
   {
     if (!transport)
@@ -134,6 +142,10 @@ const connectToDevice = async (device: BluetoothDevice) =>
     console.error('📍 GPS: Connection failed', error);
     connectionState.value = GpsConnectionState.DISCONNECTED;
     throw error;
+  }
+  finally
+  {
+    isConnecting = false;
   }
 };
 
@@ -229,57 +241,11 @@ export const useGpsService = () =>
       });
     }
 
-    watch(
-      () => userSettingsStore.gpsConnectionType,
-      async (newType) =>
-      {
-        isChangingDevice = true;
-        cancelReconnection();
-
-        if (newType === GpsConnectionType.DISABLED)
-        {
-          if (connectedDevice.value)
-          {
-            try
-            {
-              await disconnect();
-            }
-            catch (error)
-            {
-              console.error('📍 GPS: Failed to disconnect when disabling GPS', error);
-            }
-          }
-        }
-        else
-        {
-          const device = userSettingsStore.selectedBluetoothGpsDevice;
-
-          if (device)
-          {
-            try
-            {
-              await connectToDevice(device);
-            }
-            catch (error)
-            {
-              scheduleReconnection(device);
-            }
-          }
-        }
-
-        isChangingDevice = false;
-      },
-      { immediate: true }
-    );
-
     // Watch for device selection changes and auto-connect/disconnect
     watch(
       () => userSettingsStore.selectedBluetoothGpsDevice,
       async (newDevice, oldDevice) =>
       {
-        // Only handle device changes if GPS is not disabled
-        if (userSettingsStore.gpsConnectionType === GpsConnectionType.DISABLED) return;
-
         isChangingDevice = true;
         cancelReconnection();
 
@@ -330,9 +296,6 @@ export const useGpsService = () =>
       () => connectionState.value,
       (newState) =>
       {
-        // Only auto-reconnect if GPS is not disabled
-        if (userSettingsStore.gpsConnectionType === GpsConnectionType.DISABLED) return;
-
         const device = userSettingsStore.selectedBluetoothGpsDevice;
 
         if (newState === GpsConnectionState.DISCONNECTED && device && !reconnectionTimer && !isChangingDevice)

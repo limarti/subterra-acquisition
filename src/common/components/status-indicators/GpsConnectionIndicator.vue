@@ -2,18 +2,8 @@
   <IndicatorWrapper :buttonAriaLabel="'GPS connection status'">
     <template #icon>
       <div class="relative w-5 h-5">
-        <template v-if="isGpsDisabled">
-          <svg class="w-5 h-5"
-               xmlns="http://www.w3.org/2000/svg"
-               viewBox="0 0 48 48"
-               fill="gray"
-               opacity="0.5">
-            <path d="M24 16c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm17.88 6C40.96 13.66 34.34 7.04 26 6.12V2h-4v4.12C13.66 7.04 7.04 13.66 6.12 22H2v4h4.12c.92 8.34 7.54 14.96 15.88 15.88V46h4v-4.12c8.34-.92 14.96-7.54 15.88-15.88H46v-4h-4.12zM24 38c-7.73 0-14-6.27-14-14s6.27-14 14-14 14 6.27 14 14-6.27 14-14 14z" />
-          </svg>
-        </template>
-
         <!-- Connected with RTK FIX (green dot) -->
-        <template v-else-if="connectionState === GpsConnectionState.CONNECTED && isRtkFix && !isPositionStale">
+        <template v-if="connectionState === GpsConnectionState.CONNECTED && isRtkFix && !isPositionStale">
           <svg class="w-5 h-5"
                xmlns="http://www.w3.org/2000/svg"
                viewBox="0 0 48 48"
@@ -65,10 +55,7 @@
     <template #content>
       <div class="p-3 w-44">
         <div class="flex flex-col">
-          <template v-if="isGpsDisabled">
-            <span class="font-medium text-gray-400">{{ $t('common.disabled') }}</span>
-          </template>
-          <template v-else-if="connectionState === GpsConnectionState.CONNECTED && !isPositionStale">
+          <template v-if="connectionState === GpsConnectionState.CONNECTED && !isPositionStale">
             <div class="flex flex-col mb-2">
               <span class="text-[10px] text-gray-500 uppercase">{{ $t('gps.device') }}</span>
               <span class="text-sm text-white font-medium">{{ connectedDevice?.name }}</span>
@@ -118,9 +105,7 @@
 <script setup lang="ts">
   import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { useGpsService } from '@/services/gps/useGpsService';
-  import { useUserSettingsStore } from '@/common/stores/useUserSettingsStore';
   import { GpsConnectionState } from '@/services/gps/types/GpsConnectionState.enum';
-  import { GpsConnectionType } from '@/services/gps/types/GpsConnectionType.enum';
   import { GpsFixQuality } from '@/services/gps/types/GpsFixQuality.enum';
   import type { NmeaGgaData } from '@/services/gps/types/NmeaGgaData.type';
   import { formatCoordinateDMS } from '@/services/gps/utils/coordinateFormatter';
@@ -141,9 +126,6 @@
   };
 
   const { connectionState, connectedDevice, subscribeToLocationData } = useGpsService();
-  const userSettingsStore = useUserSettingsStore();
-
-  const isGpsDisabled = computed(() => userSettingsStore.gpsConnectionType === GpsConnectionType.DISABLED);
 
   const latestFixQuality = ref<GpsFixQuality>(GpsFixQuality.INVALID);
   const hasValidPosition = ref(false);

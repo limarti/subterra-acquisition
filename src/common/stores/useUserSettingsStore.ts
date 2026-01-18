@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, readonly } from 'vue';
 import type { BluetoothDevice } from '@/services/bluetooth/types/BluetoothDevice';
-import { GpsConnectionType } from '@/services/gps/types/GpsConnectionType.enum';
 import { EmlConnectionType } from '@/services/eml/types/EmlConnectionType.enum';
 
 export enum Unit
@@ -17,7 +16,6 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
   // ===== STATE =====
   const units = ref<Unit>(Unit.METERS);
   const selectedBluetoothGpsDevice = ref<BluetoothDevice | null>(null);
-  const gpsConnectionType = ref<GpsConnectionType>(GpsConnectionType.BLUETOOTH);
   const selectedBluetoothEmlDevice = ref<BluetoothDevice | null>(null);
   const emlConnectionType = ref<EmlConnectionType>(EmlConnectionType.DISABLED);
 
@@ -38,13 +36,6 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
       if (savedBluetoothDevice)
       {
         selectedBluetoothGpsDevice.value = JSON.parse(savedBluetoothDevice) as BluetoothDevice;
-      }
-
-      // Load GPS connection type
-      const savedGpsConnectionType = localStorage.getItem('gla-gps-connection-type');
-      if (savedGpsConnectionType && Object.values(GpsConnectionType).includes(savedGpsConnectionType as GpsConnectionType))
-      {
-        gpsConnectionType.value = savedGpsConnectionType as GpsConnectionType;
       }
 
       // Load selected Bluetooth EML device
@@ -112,24 +103,6 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
     }
   };
 
-  const setGpsConnectionType = (type: GpsConnectionType): void =>
-  {
-    const previousType = gpsConnectionType.value;
-
-    try
-    {
-      gpsConnectionType.value = type;
-      localStorage.setItem('gla-gps-connection-type', type);
-    }
-    catch (error)
-    {
-      // Revert on failure
-      gpsConnectionType.value = previousType;
-      console.error('Failed to save GPS connection type to localStorage:', error);
-      throw error;
-    }
-  };
-
   const setSelectedBluetoothEmlDevice = (device: BluetoothDevice | null): void =>
   {
     const previousDevice = selectedBluetoothEmlDevice.value;
@@ -180,14 +153,12 @@ export const useUserSettingsStore = defineStore('userSettings', () =>
     // State
     units,
     selectedBluetoothGpsDevice: readonly(selectedBluetoothGpsDevice),
-    gpsConnectionType: readonly(gpsConnectionType),
     selectedBluetoothEmlDevice: readonly(selectedBluetoothEmlDevice),
     emlConnectionType: readonly(emlConnectionType),
 
     // Actions
     setUnits,
     setSelectedBluetoothGpsDevice,
-    setGpsConnectionType,
     setSelectedBluetoothEmlDevice,
     setEmlConnectionType
   };

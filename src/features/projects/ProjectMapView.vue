@@ -32,6 +32,7 @@
   let unsubscribeGps: (() => void) | null = null;
   let hasCenteredOnGps = false;
   let objectLayers: Map<string, L.LayerGroup> = new Map();
+  let locationMarker: L.CircleMarker | null = null;
 
   const DEFAULT_CENTER: L.LatLngExpression = [0, 0];
   const DEFAULT_ZOOM = 18;
@@ -120,8 +121,6 @@
 
     unsubscribeGps = subscribeToLocationData((data) =>
     {
-      if (hasCenteredOnGps) return;
-
       const isValidFix = data.isValid &&
                          data.fixQuality > GpsFixQuality.INVALID &&
                          data.latitude !== null &&
@@ -129,8 +128,28 @@
 
       if (isValidFix && map)
       {
-        map.setView([data.latitude!, data.longitude!], DEFAULT_ZOOM);
-        hasCenteredOnGps = true;
+        const latLng: L.LatLngExpression = [data.latitude!, data.longitude!];
+
+        if (!locationMarker)
+        {
+          locationMarker = L.circleMarker(latLng, {
+            radius: 8,
+            color: '#ffffff',
+            fillColor: '#3b82f6',
+            fillOpacity: 1,
+            weight: 2
+          }).addTo(map);
+        }
+        else
+        {
+          locationMarker.setLatLng(latLng);
+        }
+
+        if (!hasCenteredOnGps)
+        {
+          map.setView(latLng, DEFAULT_ZOOM);
+          hasCenteredOnGps = true;
+        }
       }
     });
   });
@@ -145,6 +164,12 @@
 
     objectLayers.forEach(layer => layer.remove());
     objectLayers.clear();
+
+    if (locationMarker)
+    {
+      locationMarker.remove();
+      locationMarker = null;
+    }
 
     if (map)
     {

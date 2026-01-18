@@ -198,7 +198,7 @@
     "no_device_selected": "Ningún dispositivo seleccionado",
     "permission_error": "Se requiere permiso de Bluetooth para conectarse a dispositivos GPS.",
     "permission_denied": "Permiso de Bluetooth denegado",
-    "permission_denied_help_ios": "Para conectarse a dispositivos GPS, necesita habilitar manualmente los permisos de Bluetooth. Vaya a Configuración → GLA → Bluetooth y habilite los permisos.",
+    "permission_denied_help_ios": "Para conectarse a dispositivos GPS, necesita habilitar manualmente los permisos de Bluetooth. Vaya a Configuración → Subterra EML → Bluetooth y habilite los permisos.",
     "open_settings": "Abrir Configuración",
     "waiting_for_fix": "Esperando posiciones...",
     "connection_type": "Tipo de Conexión",

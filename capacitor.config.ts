@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'ar.com.subterra.adquisicion',
-  appName: 'GLA',
+  appName: 'Subterra EML',
   webDir: 'dist',
   plugins: {
     SplashScreen: {

@@ -4,10 +4,12 @@
       ref="mapContainer"
       class="h-full w-full"
     />
-    <MapActionBar
-      @add-click="handleAddClick"
-      @layers-click="handleLayersClick"
-    />
+    <div class="absolute inset-0 z-[1000] pointer-events-none">
+      <MapActionBar
+        @add-click="handleAddClick"
+        @layers-click="handleLayersClick"
+      />
+    </div>
   </div>
 </template>
 

@@ -1,14 +1,10 @@
 <template>
   <div class="h-full w-full relative">
-    <div
-      ref="mapContainer"
-      class="h-full w-full"
-    />
+    <div ref="mapContainer"
+         class="h-full w-full" />
     <div class="absolute inset-0 z-[1000] pointer-events-none">
-      <MapActionBar
-        @add-click="handleAddClick"
-        @layers-click="handleLayersClick"
-      />
+      <MapActionBar @add-click="handleAddClick"
+                    @layers-click="handleLayersClick" />
     </div>
   </div>
 </template>
@@ -110,23 +106,24 @@
     if (!mapContainer.value) return;
 
     map = L.map(mapContainer.value,
-    {
-      attributionControl: false,
-    }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+                {
+                  attributionControl: false,
+                }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
-      maxZoom: 19,
-    }).addTo(map);
+    L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                {
+                  maxZoom: 20,
+                  maxNativeZoom: 16,
+                }).addTo(map);
 
     renderObjectsOnMap();
 
     unsubscribeGps = subscribeToLocationData((data) =>
     {
       const isValidFix = data.isValid &&
-                         data.fixQuality > GpsFixQuality.INVALID &&
-                         data.latitude !== null &&
-                         data.longitude !== null;
+        data.fixQuality > GpsFixQuality.INVALID &&
+        data.latitude !== null &&
+        data.longitude !== null;
 
       if (isValidFix && map)
       {

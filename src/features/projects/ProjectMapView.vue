@@ -3,14 +3,22 @@
     <div ref="mapContainer"
          class="h-full w-full" />
     <div class="absolute inset-0 z-[1000] pointer-events-none">
-      <MapActionBar @add-click="handleAddClick"
-                    @layers-click="handleLayersClick" />
+      <LayerIndicator
+        :layers="layers"
+        :activeLayerId="activeLayerId"
+        @select-layer="handleSelectLayer"
+        @delete-layer="handleDeleteLayer"
+        @toggle-visibility="handleToggleVisibility"
+        @add-layer="handleAddLayer"
+        @view-elements="handleViewElements"
+      />
+      <MapActionBar @add-click="handleAddClick" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, onUnmounted, watch } from 'vue';
+  import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
   import L from 'leaflet';
   import 'leaflet/dist/leaflet.css';
   import { openDialog } from 'vue3-promise-dialog';
@@ -19,8 +27,11 @@
   import { GpsFixQuality } from '@/services/gps/types/GpsFixQuality.enum';
   import MapActionBar from './map/MapActionBar.vue';
   import AddObjectDialog from './objects/AddObjectDialog.vue';
-  import LayersDialog from './objects/LayersDialog.vue';
+  import LayerIndicator from './layers/LayerIndicator.vue';
+  import LayerElementsDialog from './layers/LayerElementsDialog.vue';
+  import AddLayerDialog from './layers/AddLayerDialog.vue';
   import type { ProjectObject, EmlTrace } from './objects/ProjectObject.type';
+  import { createEmlTrace, getNextObjectName } from './objects/objectUtils';
 
   const { project, saveProject } = useProjectContext();
   const { subscribeToLocationData } = useGpsService();
@@ -35,6 +46,24 @@
   const DEFAULT_CENTER: L.LatLngExpression = [0, 0];
   const DEFAULT_ZOOM = 18;
 
+  const activeLayerId = ref<string | null>(null);
+
+  const layers = computed(() => project.value?.objects ?? []);
+
+  watch(layers, (newLayers) =>
+  {
+    const firstLayerId = newLayers[0]?.id ?? null;
+
+    if (activeLayerId.value === null && newLayers.length > 0)
+    {
+      activeLayerId.value = firstLayerId;
+    }
+    else if (activeLayerId.value !== null && !newLayers.some(l => l.id === activeLayerId.value))
+    {
+      activeLayerId.value = firstLayerId;
+    }
+  }, { immediate: true });
+
   const handleAddClick = async (): Promise<void> =>
   {
     const existingObjects = project.value?.objects ?? [];
@@ -47,12 +76,93 @@
         ...project.value,
         objects: updatedObjects
       });
+      activeLayerId.value = newObject.id;
     }
   };
 
-  const handleLayersClick = async (): Promise<void> =>
+  const handleAddLayer = async (): Promise<void> =>
   {
-    await openDialog(LayersDialog);
+    const existingObjects = project.value?.objects ?? [];
+    const defaultName = getNextObjectName(existingObjects, 'emlTrace');
+    const layerName = await openDialog<string | null>(AddLayerDialog, { defaultName });
+
+    if (layerName && project.value)
+    {
+      const newObject = createEmlTrace(layerName);
+      const updatedObjects = [...existingObjects, newObject];
+      await saveProject({
+        ...project.value,
+        objects: updatedObjects
+      });
+      activeLayerId.value = newObject.id;
+    }
+  };
+
+  const handleSelectLayer = (layerId: string): void =>
+  {
+    activeLayerId.value = layerId;
+  };
+
+  const handleDeleteLayer = async (layerId: string): Promise<void> =>
+  {
+    if (!project.value) return;
+
+    const updatedObjects = (project.value.objects ?? []).filter(obj => obj.id !== layerId);
+    await saveProject({
+      ...project.value,
+      objects: updatedObjects
+    });
+  };
+
+  const handleToggleVisibility = async (layerId: string): Promise<void> =>
+  {
+    if (!project.value) return;
+
+    const updatedObjects = (project.value.objects ?? []).map(obj =>
+      obj.id === layerId ? { ...obj, visible: !obj.visible } : obj
+    );
+
+    await saveProject({
+      ...project.value,
+      objects: updatedObjects
+    });
+  };
+
+  const handleViewElements = async (layer: ProjectObject): Promise<void> =>
+  {
+    if (layer.type !== 'emlTrace') return;
+
+    const result = await openDialog<{ type: 'delete'; elementIndex: number } | null>(
+      LayerElementsDialog,
+      { layer: layer as EmlTrace }
+    );
+
+    if (result?.type === 'delete' && project.value)
+    {
+      const updatedObjects = (project.value.objects ?? []).map(obj =>
+      {
+        if (obj.id === layer.id && obj.type === 'emlTrace')
+        {
+          const trace = obj as EmlTrace;
+          return {
+            ...trace,
+            points: trace.points.filter((_, idx) => idx !== result.elementIndex)
+          };
+        }
+        return obj;
+      });
+
+      await saveProject({
+        ...project.value,
+        objects: updatedObjects
+      });
+
+      const updatedLayer = updatedObjects.find(obj => obj.id === layer.id);
+      if (updatedLayer && updatedLayer.type === 'emlTrace' && (updatedLayer as EmlTrace).points.length > 0)
+      {
+        await handleViewElements(updatedLayer);
+      }
+    }
   };
 
   const renderObjectsOnMap = (): void =>

@@ -15,7 +15,7 @@ export const getNextObjectName = (objects: ProjectObject[], type: ObjectType): s
 {
   const typeLabels: Record<ObjectType, string> =
   {
-    emlTrace: 'Trace'
+    emlTrace: 'Layer'
   };
 
   const label = typeLabels[type];

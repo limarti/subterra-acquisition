@@ -63,7 +63,8 @@
       id: idProject,
       name: result.projectName,
       dateCreated: Date.now(),
-      areas: []
+      areas: [],
+      layers: []
     });
 
     await saveProject(metadata);

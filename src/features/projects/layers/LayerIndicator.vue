@@ -111,11 +111,11 @@
 <script setup lang="ts">
   import { computed } from 'vue';
   import GeoPopper from '@/common/components/GeoPopper.vue';
-  import type { ProjectObject } from '../objects/ProjectObject.type';
+  import type { Layer } from '../objects/ProjectObject.type';
 
   interface Props
   {
-    layers: ProjectObject[];
+    layers: Layer[];
     activeLayerId: string | null;
   }
 
@@ -125,7 +125,7 @@
     'delete-layer': [layerId: string];
     'toggle-visibility': [layerId: string];
     'add-layer': [];
-    'view-elements': [layer: ProjectObject];
+    'view-elements': [layer: Layer];
   }
 
   const props = defineProps<Props>();

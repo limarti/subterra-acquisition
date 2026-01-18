@@ -16,20 +16,23 @@
         No elements
       </div>
 
-      <div v-for="(element, index) in elements" :key="index"
+      <div v-for="(element, index) in elements" :key="element.id"
            class="flex items-center justify-between py-3 px-3 border-b border-border-gray hover:bg-background-darker-darker transition">
         <div class="flex items-center gap-3">
           <svg class="w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
           </svg>
-          <span class="text-white/80 text-sm">Point {{ index + 1 }}</span>
+          <div class="flex flex-col">
+            <span class="text-white/80 text-sm">Reading {{ index + 1 }}</span>
+            <span class="text-text-secondary text-xs">{{ formatTimestamp(element.epoch) }}</span>
+          </div>
         </div>
 
         <button
           type="button"
           class="p-1 text-text-secondary hover:text-red-400 transition cursor-pointer"
           title="Delete element"
-          @click="handleDeleteElement(index)"
+          @click="handleDeleteElement(element.id)"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -45,28 +48,34 @@
   import { computed } from 'vue';
   import { closeDialog } from 'vue3-promise-dialog';
   import GeoGenericDialog from '@/generic/components/GeoGenericDialog.vue';
-  import type { EmlTrace } from '../objects/ProjectObject.type';
+  import type { Layer } from '../objects/ProjectObject.type';
 
   interface Props
   {
-    layer: EmlTrace;
+    layer: Layer;
   }
 
   interface DeleteElementResult
   {
     type: 'delete';
-    elementIndex: number;
+    elementId: string;
   }
 
   const props = defineProps<Props>();
 
-  const elements = computed(() => props.layer.points);
+  const elements = computed(() => props.layer.objects);
 
-  const handleDeleteElement = (index: number): void =>
+  const formatTimestamp = (epoch: number): string =>
+  {
+    const date = new Date(epoch);
+    return date.toLocaleString();
+  };
+
+  const handleDeleteElement = (elementId: string): void =>
   {
     const result: DeleteElementResult = {
       type: 'delete',
-      elementIndex: index
+      elementId
     };
     closeDialog(result);
   };

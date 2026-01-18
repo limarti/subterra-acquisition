@@ -1,17 +1,22 @@
-export type ObjectType = 'emlTrace';
+// ===== LAYER OBJECT TYPES =====
+export type LayerObjectType = 'emlReading';
 
-export interface BaseProjectObject
+export interface EmlReading
+{
+  id: string;
+  type: 'emlReading';
+  epoch: number;      // Unix timestamp
+  eml: string;        // Raw EML data
+  gps: string;        // Raw NMEA sentence (empty if no fix)
+}
+
+export type LayerObject = EmlReading;
+
+// ===== LAYER TYPE =====
+export interface Layer
 {
   id: string;
   name: string;
-  type: ObjectType;
   visible: boolean;
+  objects: LayerObject[];
 }
-
-export interface EmlTrace extends BaseProjectObject
-{
-  type: 'emlTrace';
-  points: Array<{ lat: number; lng: number; timestamp: number }>;
-}
-
-export type ProjectObject = EmlTrace;

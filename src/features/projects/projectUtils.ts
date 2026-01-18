@@ -21,3 +21,19 @@ export const ensureAreasExist = (project: ProjectMetadata): ProjectMetadata =>
   }
   return project;
 };
+
+/**
+ * Ensures the project has a layers array.
+ * Used for backward compatibility with projects created before layers were added.
+ */
+export const ensureLayersExist = (project: ProjectMetadata): ProjectMetadata =>
+{
+  if (!project.layers)
+  {
+    return {
+      ...project,
+      layers: []
+    };
+  }
+  return project;
+};

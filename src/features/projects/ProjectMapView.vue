@@ -12,7 +12,6 @@
         @add-layer="handleAddLayer"
         @view-elements="handleViewElements"
       />
-      <MapActionBar @add-click="handleAddClick" />
     </div>
   </div>
 </template>
@@ -24,93 +23,69 @@
   import { openDialog } from 'vue3-promise-dialog';
   import { useProjectContext } from './useProjectContext';
   import { useGpsService } from '@/services/gps/useGpsService';
+  import { useActiveLayerStore } from './stores/useActiveLayerStore';
   import { GpsFixQuality } from '@/services/gps/types/GpsFixQuality.enum';
-  import MapActionBar from './map/MapActionBar.vue';
-  import AddObjectDialog from './objects/AddObjectDialog.vue';
+  import { parseNmeaGga } from '@/services/gps/utils/nmeaParser';
   import LayerIndicator from './layers/LayerIndicator.vue';
   import LayerElementsDialog from './layers/LayerElementsDialog.vue';
   import AddLayerDialog from './layers/AddLayerDialog.vue';
-  import type { ProjectObject, EmlTrace } from './objects/ProjectObject.type';
-  import { createEmlTrace, getNextObjectName } from './objects/objectUtils';
+  import type { Layer, EmlReading } from './objects/ProjectObject.type';
+  import { createLayer, getNextLayerName } from './objects/objectUtils';
 
   const { project, saveProject } = useProjectContext();
   const { subscribeToLocationData } = useGpsService();
+  const activeLayerStore = useActiveLayerStore();
 
   const mapContainer = ref<HTMLDivElement | null>(null);
   let map: L.Map | null = null;
   let unsubscribeGps: (() => void) | null = null;
   let hasCenteredOnGps = false;
-  let objectLayers: Map<string, L.LayerGroup> = new Map();
+  let layerGroups: Map<string, L.LayerGroup> = new Map();
   let locationMarker: L.CircleMarker | null = null;
 
   const DEFAULT_CENTER: L.LatLngExpression = [0, 0];
   const DEFAULT_ZOOM = 18;
 
-  const activeLayerId = ref<string | null>(null);
+  const layers = computed(() => project.value?.layers ?? []);
+  const activeLayerId = computed(() => activeLayerStore.activeLayerId);
 
-  const layers = computed(() => project.value?.objects ?? []);
-
-  watch(layers, (newLayers) =>
+  // Validate active layer when layers change
+  watch(layers, () =>
   {
-    const firstLayerId = newLayers[0]?.id ?? null;
-
-    if (activeLayerId.value === null && newLayers.length > 0)
-    {
-      activeLayerId.value = firstLayerId;
-    }
-    else if (activeLayerId.value !== null && !newLayers.some(l => l.id === activeLayerId.value))
-    {
-      activeLayerId.value = firstLayerId;
-    }
+    activeLayerStore.validateActiveLayer(project.value);
   }, { immediate: true });
-
-  const handleAddClick = async (): Promise<void> =>
-  {
-    const existingObjects = project.value?.objects ?? [];
-    const newObject = await openDialog<ProjectObject | null>(AddObjectDialog, { existingObjects });
-
-    if (newObject && project.value)
-    {
-      const updatedObjects = [...(project.value.objects ?? []), newObject];
-      await saveProject({
-        ...project.value,
-        objects: updatedObjects
-      });
-      activeLayerId.value = newObject.id;
-    }
-  };
 
   const handleAddLayer = async (): Promise<void> =>
   {
-    const existingObjects = project.value?.objects ?? [];
-    const defaultName = getNextObjectName(existingObjects, 'emlTrace');
+    const existingLayers = project.value?.layers ?? [];
+    const defaultName = getNextLayerName(existingLayers);
     const layerName = await openDialog<string | null>(AddLayerDialog, { defaultName });
 
     if (layerName && project.value)
     {
-      const newObject = createEmlTrace(layerName);
-      const updatedObjects = [...existingObjects, newObject];
+      const newLayer = createLayer(layerName);
+      const updatedLayers = [...existingLayers, newLayer];
       await saveProject({
         ...project.value,
-        objects: updatedObjects
+        layers: updatedLayers
       });
-      activeLayerId.value = newObject.id;
+      activeLayerStore.setActiveLayer(newLayer.id);
     }
   };
 
   const handleSelectLayer = (layerId: string): void =>
   {
-    activeLayerId.value = layerId;
+    activeLayerStore.setActiveLayer(layerId);
   };
 
   const handleDeleteLayer = async (layerId: string): Promise<void> =>
   {
     if (!project.value) return;
 
-    const updatedObjects = (project.value.objects ?? []).filter(obj => obj.id !== layerId);
+    const updatedLayers = project.value.layers.filter(layer => layer.id !== layerId);
     await saveProject({
       ...project.value,
-      objects: updatedObjects
+      layers: updatedLayers
     });
   };
 
@@ -118,96 +93,125 @@
   {
     if (!project.value) return;
 
-    const updatedObjects = (project.value.objects ?? []).map(obj =>
-      obj.id === layerId ? { ...obj, visible: !obj.visible } : obj
+    const updatedLayers = project.value.layers.map(layer =>
+      layer.id === layerId ? { ...layer, visible: !layer.visible } : layer
     );
 
     await saveProject({
       ...project.value,
-      objects: updatedObjects
+      layers: updatedLayers
     });
   };
 
-  const handleViewElements = async (layer: ProjectObject): Promise<void> =>
+  const handleViewElements = async (layer: Layer): Promise<void> =>
   {
-    if (layer.type !== 'emlTrace') return;
-
-    const result = await openDialog<{ type: 'delete'; elementIndex: number } | null>(
+    const result = await openDialog<{ type: 'delete'; elementId: string } | null>(
       LayerElementsDialog,
-      { layer: layer as EmlTrace }
+      { layer }
     );
 
     if (result?.type === 'delete' && project.value)
     {
-      const updatedObjects = (project.value.objects ?? []).map(obj =>
+      const updatedLayers = project.value.layers.map(l =>
       {
-        if (obj.id === layer.id && obj.type === 'emlTrace')
+        if (l.id === layer.id)
         {
-          const trace = obj as EmlTrace;
           return {
-            ...trace,
-            points: trace.points.filter((_, idx) => idx !== result.elementIndex)
+            ...l,
+            objects: l.objects.filter(obj => obj.id !== result.elementId)
           };
         }
-        return obj;
+        return l;
       });
 
       await saveProject({
         ...project.value,
-        objects: updatedObjects
+        layers: updatedLayers
       });
 
-      const updatedLayer = updatedObjects.find(obj => obj.id === layer.id);
-      if (updatedLayer && updatedLayer.type === 'emlTrace' && (updatedLayer as EmlTrace).points.length > 0)
+      const updatedLayer = updatedLayers.find(l => l.id === layer.id);
+      if (updatedLayer && updatedLayer.objects.length > 0)
       {
         await handleViewElements(updatedLayer);
       }
     }
   };
 
-  const renderObjectsOnMap = (): void =>
+  /**
+   * Extract lat/lng from EML reading's GPS NMEA sentence
+   */
+  const getCoordinatesFromReading = (reading: EmlReading): { lat: number; lng: number } | null =>
+  {
+    if (!reading.gps)
+    {
+      return null;
+    }
+
+    try
+    {
+      const parsed = parseNmeaGga(reading.gps);
+      if (parsed.isValid && parsed.latitude !== null && parsed.longitude !== null)
+      {
+        return { lat: parsed.latitude, lng: parsed.longitude };
+      }
+    }
+    catch
+    {
+      // Invalid NMEA sentence
+    }
+
+    return null;
+  };
+
+  const renderLayersOnMap = (): void =>
   {
     if (!map) return;
 
-    objectLayers.forEach(layer => layer.remove());
-    objectLayers.clear();
+    layerGroups.forEach(group => group.remove());
+    layerGroups.clear();
 
-    const objects = project.value?.objects ?? [];
+    const projectLayers = project.value?.layers ?? [];
 
-    objects.forEach(obj =>
+    projectLayers.forEach(layer =>
     {
-      if (!obj.visible) return;
+      if (!layer.visible) return;
 
-      if (obj.type === 'emlTrace')
+      const layerGroup = L.layerGroup();
+      const points: L.LatLngExpression[] = [];
+
+      layer.objects.forEach(obj =>
       {
-        const trace = obj as EmlTrace;
-        const layerGroup = L.layerGroup();
-
-        if (trace.points.length > 0)
+        if (obj.type === 'emlReading')
         {
-          const latLngs = trace.points.map(p => [p.lat, p.lng] as L.LatLngExpression);
-          L.polyline(latLngs, { color: '#3b82f6', weight: 3 }).addTo(layerGroup);
-
-          trace.points.forEach(point =>
+          const coords = getCoordinatesFromReading(obj);
+          if (coords)
           {
-            L.circleMarker([point.lat, point.lng], {
+            points.push([coords.lat, coords.lng]);
+
+            L.circleMarker([coords.lat, coords.lng], {
               radius: 4,
               color: '#3b82f6',
               fillColor: '#3b82f6',
               fillOpacity: 1
             }).addTo(layerGroup);
-          });
+          }
         }
+      });
 
-        layerGroup.addTo(map!);
-        objectLayers.set(obj.id, layerGroup);
+      // Draw polyline connecting points
+      if (points.length > 1)
+      {
+        L.polyline(points, { color: '#3b82f6', weight: 3 }).addTo(layerGroup);
       }
+
+      layerGroup.addTo(map!);
+      layerGroups.set(layer.id, layerGroup);
     });
   };
 
   watch(
-    () => project.value?.objects,
-    () => renderObjectsOnMap(),
+    () => project.value?.layers,
+    () => renderLayersOnMap(),
     { deep: true }
   );
 
@@ -226,7 +230,7 @@
                   maxNativeZoom: 16,
                 }).addTo(map);
 
-    renderObjectsOnMap();
+    renderLayersOnMap();
 
     unsubscribeGps = subscribeToLocationData((data) =>
     {
@@ -271,8 +275,8 @@
       unsubscribeGps = null;
     }
 
-    objectLayers.forEach(layer => layer.remove());
-    objectLayers.clear();
+    layerGroups.forEach(group => group.remove());
+    layerGroups.clear();
 
     if (locationMarker)
     {

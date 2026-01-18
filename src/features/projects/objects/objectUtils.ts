@@ -1,26 +1,28 @@
-import type { EmlTrace, ObjectType, ProjectObject } from './ProjectObject.type';
+import type { Layer, EmlReading } from './ProjectObject.type';
 
-export const createEmlTrace = (name: string): EmlTrace =>
+export const createLayer = (name: string): Layer =>
 {
   return {
     id: crypto.randomUUID(),
     name,
-    type: 'emlTrace',
     visible: true,
-    points: []
+    objects: []
   };
 };
 
-export const getNextObjectName = (objects: ProjectObject[], type: ObjectType): string =>
+export const createEmlReading = (eml: string, gps: string): EmlReading =>
 {
-  const typeLabels: Record<ObjectType, string> =
-  {
-    emlTrace: 'Layer'
+  return {
+    id: crypto.randomUUID(),
+    type: 'emlReading',
+    epoch: Date.now(),
+    eml,
+    gps
   };
+};
 
-  const label = typeLabels[type];
-  const existingOfType = objects.filter(obj => obj.type === type);
-  const nextNumber = existingOfType.length + 1;
-
-  return `${label} ${nextNumber}`;
+export const getNextLayerName = (layers: Layer[]): string =>
+{
+  const nextNumber = layers.length + 1;
+  return `Layer ${nextNumber}`;
 };

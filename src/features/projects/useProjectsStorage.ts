@@ -1,6 +1,7 @@
 import type { ProjectMetadata } from './ProjectMetadata.type';
 import { useFileManager } from '@/services/files/composables/useFileManager';
 import { GeoFolderDoesNotExistError } from '@/services/files/exceptions/GeoFolderDoesNotExistError';
+import { ensureLayersExist } from './projectUtils';
 
 export const useProjectsStorage = () =>
 {
@@ -43,7 +44,8 @@ export const useProjectsStorage = () =>
         {
           const metadataJson = new TextDecoder().decode(metadataBytes);
           const metadata: ProjectMetadata = JSON.parse(metadataJson);
-          return metadata;
+          // Migrate old projects that don't have layers
+          return ensureLayersExist(metadata);
         }
         catch
         {
@@ -84,7 +86,8 @@ export const useProjectsStorage = () =>
       const metadataJson = new TextDecoder().decode(metadataBytes);
       const metadata: ProjectMetadata = JSON.parse(metadataJson);
 
-      return metadata;
+      // Migrate old projects that don't have layers
+      return ensureLayersExist(metadata);
     }
     catch (err)
     {

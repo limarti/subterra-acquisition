@@ -36,6 +36,8 @@
       return 'bg-green-500';
     case ToastType.ERROR:
       return 'bg-red-500';
+    case ToastType.WARNING:
+      return 'bg-amber-500';
     default:
       return 'bg-gray-500';
     }

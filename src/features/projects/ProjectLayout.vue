@@ -183,7 +183,7 @@
   import type { ProjectMetadata } from './ProjectMetadata.type';
   import ToastNotification from '@/common/components/ToastNotification.vue';
   import { ToastType } from '@/common/types/ToastType';
-  import { useEmlLogger } from '@/services/eml/useEmlLogger';
+  import { useEmlRecorder } from '@/services/eml/useEmlRecorder';
   import { uint8ArrayToBase64 } from '@/services/files/utils/base64';
   import { downloadBlobAsFile } from '@/common/utils/downloadBlobAsFile';
 
@@ -201,9 +201,6 @@
   const isDeleting = ref(false);
   const isSharing = ref(false);
   const isMenuOpen = ref(false);
-
-  // Initialize EML logger - auto-starts when project is loaded
-  useEmlLogger(project);
 
   const idProject = computed(() => route.params.idProject as string);
 
@@ -269,6 +266,9 @@
     await saveProjectToStorage(updatedProject);
     project.value = updatedProject;
   };
+
+  // Initialize EML recorder - auto-starts when project is loaded
+  useEmlRecorder(project, saveProject);
 
   const navigateBack = () =>
   {

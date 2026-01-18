@@ -1,5 +1,5 @@
 import type { AreaOfInterest } from './AreaOfInterest.type';
-import type { ProjectObject } from './objects/ProjectObject.type';
+import type { Layer } from './objects/ProjectObject.type';
 
 export type ProjectMetadata =
   {
@@ -7,5 +7,5 @@ export type ProjectMetadata =
     name: string;
     dateCreated: number;
     areas: AreaOfInterest[];
-    objects?: ProjectObject[];
+    layers: Layer[];
   }

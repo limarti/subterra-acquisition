@@ -20,9 +20,7 @@
 
     const updatedProject = {
       ...project.value,
-      name: updates.name ?? project.value.name,
-      clientName: updates.clientName ?? project.value.clientName,
-      jobCode: updates.jobCode ?? project.value.jobCode
+      name: updates.name ?? project.value.name
     };
 
     await saveProject(updatedProject);

@@ -29,6 +29,7 @@
   import LayerIndicator from './layers/LayerIndicator.vue';
   import LayerElementsDialog from './layers/LayerElementsDialog.vue';
   import AddLayerDialog from './layers/AddLayerDialog.vue';
+  import GeoConfirmationDialog from '@/generic/components/GeoConfirmationDialog.vue';
   import type { Layer, EmlReading } from './objects/ProjectObject.type';
   import { createLayer, getNextLayerName } from './objects/objectUtils';
 
@@ -81,6 +82,18 @@
   const handleDeleteLayer = async (layerId: string): Promise<void> =>
   {
     if (!project.value) return;
+
+    const layerToDelete = project.value.layers.find(layer => layer.id === layerId);
+    if (!layerToDelete) return;
+
+    const confirmed = await openDialog<boolean>(GeoConfirmationDialog, {
+      title: 'Delete Layer',
+      message: `Are you sure you want to delete "${layerToDelete.name}"? All elements in this layer will be permanently deleted.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+
+    if (!confirmed) return;
 
     const updatedLayers = project.value.layers.filter(layer => layer.id !== layerId);
     await saveProject({
@@ -179,6 +192,7 @@
       const layerGroup = L.layerGroup();
       const points: L.LatLngExpression[] = [];
 
+      let pointNumber = 0;
       layer.objects.forEach(obj =>
       {
         if (obj.type === 'emlReading')
@@ -186,6 +200,7 @@
           const coords = getCoordinatesFromReading(obj);
           if (coords)
           {
+            pointNumber++;
             points.push([coords.lat, coords.lng]);
 
             L.circleMarker([coords.lat, coords.lng], {
@@ -193,6 +208,16 @@
               color: '#3b82f6',
               fillColor: '#3b82f6',
               fillOpacity: 1
+            }).addTo(layerGroup);
+
+            // Add point number label
+            L.marker([coords.lat, coords.lng], {
+              icon: L.divIcon({
+                className: 'point-number-label',
+                html: `<span>${pointNumber}</span>`,
+                iconSize: [20, 14],
+                iconAnchor: [-6, 7]
+              })
             }).addTo(layerGroup);
           }
         }
@@ -294,4 +319,18 @@
 
 <style>
   @reference "tailwindcss";
+
+  .point-number-label
+  {
+    background: transparent;
+    border: none;
+  }
+
+  .point-number-label span
+  {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 0 3px #000, 0 0 3px #000;
+  }
 </style>

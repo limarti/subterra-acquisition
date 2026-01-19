@@ -90,6 +90,11 @@ export const useEmlRecorder = (
       });
 
       log(`Recorded EML reading to layer "${activeLayer.name}"`);
+      showToast(
+        ToastNotification,
+        { message: `EML point added to "${activeLayer.name}"`, type: ToastType.SUCCESS },
+        3000
+      );
     }
     catch (error)
     {

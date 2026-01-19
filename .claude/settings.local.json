@@ -6,7 +6,10 @@
       "mcp__chrome-devtools__take_screenshot",
       "mcp__chrome-devtools__click",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebSearch",
+      "WebFetch(domain:support.radiodetection.com)",
+      "WebFetch(domain:help.fieldsystems.trimble.com)"
     ]
   }
 }

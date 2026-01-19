@@ -23,7 +23,7 @@
         }" />
       </RouterView>
 
-      <div class="absolute top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-50">
         <TransitionGroup enterActiveClass="transition-opacity duration-300"
                          enterFromClass="opacity-0"
                          enterToClass="opacity-100"

@@ -23,7 +23,7 @@
                   @click="handleCancel">
             {{ cancelText }}
           </button>
-          <button class="flex-1 px-4 py-2 text-sm text-white bg-accent-primary rounded hover:opacity-90 transition-colors cursor-pointer"
+          <button class="flex-1 px-4 py-2 text-sm text-background bg-accent-primary rounded hover:opacity-90 transition-colors cursor-pointer"
                   @click="handleConfirm">
             {{ confirmText }}
           </button>

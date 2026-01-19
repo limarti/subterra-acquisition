@@ -1,6 +1,6 @@
 <template>
   <div class="dialog-overlay overflow-hidden absolute inset-0 backdrop-blur-xs bg-black/50 flex items-end justify-center transition-opacity duration-200 ease-out dialog-fade" @click="handleOverlayClick" @keydown.escape="handleClose">
-    <div class="bg-background-lighter dialog-slide border-t-1 border-x-1 mx-4 border-border-gray rounded-t-md max-h-[calc(100%-1rem)] shadow-[0_-8px_48px_0_rgba(0,0,0,0.5)] w-100 flex flex-col" @click.stop>
+    <div class="bg-background-lighter dialog-slide border-t-1 border-x-1 mx-4 border-border-gray rounded-t-md max-h-[calc(100%-4rem)] shadow-[0_-8px_48px_0_rgba(0,0,0,0.5)] w-100 flex flex-col" @click.stop>
 
       <!-- header -->
       <div class="flex justify-start items-center p-4 border-b-1 border-border-gray shrink-0">

@@ -27,8 +27,8 @@ coverage
 *.sln
 *.sw?
 .vscode
-android
-ios
+/android
+/ios
 icons/*
 
 *.tsbuildinfo

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "cd capacitor-bluetooth-communication && npm install && npm run build",
     "dev:web": "vite",
     "dev:android": "npm run build-only && npx cap sync && npx cap run android",
     "dev:android:setup": "npm run build-only && npm run prepare-android && npx cap open android",

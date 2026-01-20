@@ -292,7 +292,7 @@ export class CapacitorBluetoothServerConnection implements IBluetoothConnection
     // Also try to listen for connection state changes if the plugin supports it
     try
     {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const connResult = (BluetoothCommunication as any).addListener('connectionStateChanged', (event: unknown) =>
       {
         log(`🔌 Connection state changed: ${JSON.stringify(event)}`);

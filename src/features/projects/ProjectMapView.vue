@@ -3,15 +3,13 @@
     <div ref="mapContainer"
          class="h-full w-full" />
     <div class="absolute inset-0 z-[1000] pointer-events-none">
-      <LayerIndicator
-        :layers="layers"
-        :activeLayerId="activeLayerId"
-        @select-layer="handleSelectLayer"
-        @delete-layer="handleDeleteLayer"
-        @toggle-visibility="handleToggleVisibility"
-        @add-layer="handleAddLayer"
-        @view-elements="handleViewElements"
-      />
+      <LayerIndicator :layers="layers"
+                      :activeLayerId="activeLayerId"
+                      @select-layer="handleSelectLayer"
+                      @delete-layer="handleDeleteLayer"
+                      @toggle-visibility="handleToggleVisibility"
+                      @add-layer="handleAddLayer"
+                      @view-elements="handleViewElements" />
     </div>
   </div>
 </template>

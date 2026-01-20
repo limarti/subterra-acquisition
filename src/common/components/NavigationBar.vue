@@ -133,15 +133,15 @@
   {
     const routeName = route.name as string;
     return routeName === 'settings' ||
-           routeName === 'dashboard' ||
-           routeName.startsWith('project');
+      routeName === 'dashboard' ||
+      routeName.startsWith('project');
   });
 
   const shouldShowEmlIndicator = computed(() =>
   {
     const routeName = route.name as string;
     return routeName === 'settings' ||
-           routeName === 'dashboard' ||
-           routeName.startsWith('project');
+      routeName === 'dashboard' ||
+      routeName.startsWith('project');
   });
 </script>

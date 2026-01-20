@@ -109,21 +109,10 @@
   import { GpsFixQuality } from '@/services/gps/types/GpsFixQuality.enum';
   import type { NmeaGgaData } from '@/services/gps/types/NmeaGgaData.type';
   import { formatCoordinateDMS } from '@/services/gps/utils/coordinateFormatter';
+  import { getFixQualityLabel } from '@/services/gps/utils/fixQualityLabels';
   import IndicatorWrapper from './IndicatorWrapper.vue';
 
   const STALE_POSITION_TIMEOUT_MS = 5000;
-
-  const fixQualityLabels: Record<GpsFixQuality, string> = {
-    [GpsFixQuality.INVALID]: 'Invalid',
-    [GpsFixQuality.GPS_FIX]: 'GPS',
-    [GpsFixQuality.DGPS_FIX]: 'DGPS',
-    [GpsFixQuality.PPS_FIX]: 'PPS',
-    [GpsFixQuality.RTK_FIX]: 'RTK FIX',
-    [GpsFixQuality.RTK_FLOAT]: 'Float',
-    [GpsFixQuality.ESTIMATED]: 'Estimated',
-    [GpsFixQuality.MANUAL]: 'Manual',
-    [GpsFixQuality.SIMULATION]: 'Sim',
-  };
 
   const { connectionState, connectedDevice, subscribeToLocationData } = useGpsService();
 
@@ -143,7 +132,7 @@
     longitude.value !== null ? formatCoordinateDMS(longitude.value, false) : ''
   );
 
-  const fixQualityLabel = computed(() => fixQualityLabels[latestFixQuality.value]);
+  const fixQualityLabel = computed(() => getFixQualityLabel(latestFixQuality.value));
 
   let unsubscribe: (() => void) | null = null;
   let stalePositionTimeout: number | null = null;

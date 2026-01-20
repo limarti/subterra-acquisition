@@ -46,6 +46,10 @@
                   <span class="text-white font-mono text-xs">{{ formattedLongitude }}</span>
                 </div>
               </div>
+              <!-- RTK Warning -->
+              <div v-if="isNotRtkFix" class="mt-3 p-2 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-400 text-xs text-center">
+                Position accuracy may be reduced (not RTK fix)
+              </div>
               <div class="mt-3 pt-3 border-t border-border-gray">
                 <div class="flex justify-between items-center">
                   <div class="flex flex-col">
@@ -150,6 +154,10 @@
 
   const fixQualityLabel = computed(() =>
     gpsData.value ? getFixQualityLabel(gpsData.value.fixQuality) : '-'
+  );
+
+  const isNotRtkFix = computed(() =>
+    hasGpsData.value && gpsData.value?.fixQuality !== GpsFixQuality.RTK_FIX
   );
 
   const fixQualityClass = computed(() =>

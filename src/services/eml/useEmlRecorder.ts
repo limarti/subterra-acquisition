@@ -15,6 +15,8 @@ const LOG_PREFIX = '📝 EML-Recorder:';
 const log = (message: string, ...args: unknown[]) => console.log(`${LOG_PREFIX} ${message}`, ...args);
 const logError = (message: string, ...args: unknown[]) => console.error(`${LOG_PREFIX} ${message}`, ...args);
 
+const GPS_STALE_THRESHOLD_MS = 5000;
+
 /**
  * EML Recorder Composable
  *
@@ -30,7 +32,7 @@ export const useEmlRecorder = (
 ) =>
 {
   const { subscribeToData } = useEmlService();
-  const { lastRawNmea } = useGpsService();
+  const { lastRawNmea, lastGpsUpdateTime } = useGpsService();
   const activeLayerStore = useActiveLayerStore();
   const { show: showToast } = useToast();
   const { open: openDialog } = useDialog();
@@ -65,8 +67,9 @@ export const useEmlRecorder = (
     // Reset warning flag when we have an active layer
     noLayerWarningShown = false;
 
-    // Get the last raw NMEA sentence (empty if no GPS fix)
-    const gpsNmea = lastRawNmea.value || '';
+    // Get the last raw NMEA sentence (empty if no GPS fix or data is stale)
+    const isGpsFresh = (Date.now() - lastGpsUpdateTime.value) < GPS_STALE_THRESHOLD_MS;
+    const gpsNmea = isGpsFresh ? (lastRawNmea.value || '') : '';
 
     // Show confirmation dialog before saving
     const confirmed = await openDialog<boolean>(EmlPointAddedDialog, {

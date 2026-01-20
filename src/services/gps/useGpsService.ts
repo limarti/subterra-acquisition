@@ -31,6 +31,7 @@ const connectionState = ref<GpsConnectionState>(GpsConnectionState.DISCONNECTED)
 const connectedDevice = ref<BluetoothDevice | null>(null);
 const gpsDataCallbacks = ref<Map<string, (data: NmeaGgaData) => void>>(new Map());
 const lastRawNmea = ref<string>('');
+const lastGpsUpdateTime = ref<number>(0);
 
 // ===== CONSTANTS =====
 const RECONNECTION_DELAYS = [1000, 2000, 4000, 8000, 10000];
@@ -75,6 +76,7 @@ const handleDataReceived = async (data: Uint8Array) =>
       if (parsedData.isValid && parsedData.checksumValid)
       {
         lastRawNmea.value = sentence;
+        lastGpsUpdateTime.value = Date.now();
         distributeGpsData(parsedData);
       }
       else
@@ -367,6 +369,7 @@ export const useGpsService = () =>
     listAvailableDevices,
     connectionState: computed(() => connectionState.value),
     connectedDevice: computed(() => connectedDevice.value),
-    lastRawNmea: computed(() => lastRawNmea.value)
+    lastRawNmea: computed(() => lastRawNmea.value),
+    lastGpsUpdateTime: computed(() => lastGpsUpdateTime.value)
   };
 };

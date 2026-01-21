@@ -35,12 +35,28 @@ jobs:
       - name: Prepare Android
         run: npm run prepare-android
 
+      - name: Generate version info
+        id: version
+        run: |
+          VERSION_NAME=$(node -p "require('./package.json').version")
+          VERSION_CODE=${{ github.run_number }}
+          COMMIT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "APK_NAME=app-debug-${VERSION_CODE}-${COMMIT_SHA}" >> $GITHUB_OUTPUT
+
       - name: Build APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug -PversionCode=${{ steps.version.outputs.VERSION_CODE }} -PversionName=${{ steps.version.outputs.VERSION_NAME }}
+
+      - name: Rename APK
+        run: |
+          mv android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/${{ steps.version.outputs.APK_NAME }}.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: ${{ steps.version.outputs.APK_NAME }}
+          path: android/app/build/outputs/apk/debug/${{ steps.version.outputs.APK_NAME }}.apk

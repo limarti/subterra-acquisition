@@ -174,6 +174,34 @@
     return null;
   };
 
+  /**
+   * Collect all valid coordinates from visible layers
+   */
+  const getAllObjectCoordinates = (): L.LatLngExpression[] =>
+  {
+    const coordinates: L.LatLngExpression[] = [];
+    const projectLayers = project.value?.layers ?? [];
+
+    projectLayers.forEach(layer =>
+    {
+      if (!layer.visible) return;
+
+      layer.objects.forEach(obj =>
+      {
+        if (obj.type === 'emlReading')
+        {
+          const coords = getCoordinatesFromReading(obj);
+          if (coords)
+          {
+            coordinates.push([coords.lat, coords.lng]);
+          }
+        }
+      });
+    });
+
+    return coordinates;
+  };
+
   const renderLayersOnMap = (): void =>
   {
     if (!map) return;
@@ -254,6 +282,15 @@
                 }).addTo(map);
 
     renderLayersOnMap();
+
+    // Center on existing objects if any, otherwise wait for GPS
+    const objectCoordinates = getAllObjectCoordinates();
+    if (objectCoordinates.length > 0)
+    {
+      const bounds = L.latLngBounds(objectCoordinates);
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: DEFAULT_ZOOM });
+      hasCenteredOnGps = true;
+    }
 
     unsubscribeGps = subscribeToLocationData((data) =>
     {

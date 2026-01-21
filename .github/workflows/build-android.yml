@@ -44,7 +44,7 @@ jobs:
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
           echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_OUTPUT
-          echo "APK_NAME=app-debug-${VERSION_CODE}-${COMMIT_SHA}" >> $GITHUB_OUTPUT
+          echo "APK_NAME=subterra-acq-${VERSION_CODE}-${COMMIT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Build APK
         working-directory: android

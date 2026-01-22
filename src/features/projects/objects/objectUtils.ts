@@ -10,15 +10,26 @@ export const createLayer = (name: string): Layer =>
   };
 };
 
-export const createEmlReading = (eml: string, gps: string): EmlReading =>
+export const createEmlReading = (
+  eml: string,
+  gps: string,
+  manualPosition?: { x: number; y: number }
+): EmlReading =>
 {
-  return {
+  const reading: EmlReading = {
     id: crypto.randomUUID(),
     type: 'emlReading',
     epoch: Date.now(),
     eml,
     gps
   };
+
+  if (manualPosition)
+  {
+    reading.manualPosition = manualPosition;
+  }
+
+  return reading;
 };
 
 export const getNextLayerName = (layers: Layer[]): string =>

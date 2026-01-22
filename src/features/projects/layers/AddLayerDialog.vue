@@ -25,14 +25,13 @@
 
       <div class="flex justify-center gap-4 p-4">
         <button type="button"
-                class="px-6 py-2 text-white/80 text-sm cursor-pointer hover:text-white transition"
+                class="btn btn-ghost"
                 @click="handleCancel">
           Cancel
         </button>
         <button type="button"
-                class="px-6 py-2 bg-accent-primary text-background-darker text-sm rounded cursor-pointer hover:opacity-90 transition"
+                class="btn btn-primary"
                 :disabled="!layerName.trim()"
-                :class="{ 'opacity-50 cursor-not-allowed': !layerName.trim() }"
                 @click="handleConfirm">
           Create
         </button>

@@ -24,11 +24,11 @@
 
       <!-- action buttons -->
       <div class="flex justify-center gap-4 my-5 px-6 shrink-0">
-        <button class="cursor-pointer px-6 py-2 text-white rounded-md bg-background flex-1"
+        <button class="btn btn-secondary flex-1"
                 @click="handleCancel">
           {{ props.cancelText }}
         </button>
-        <button class="cursor-pointer px-6 py-2 text-white rounded-md bg-accent-info flex-1"
+        <button class="btn btn-primary flex-1"
                 @click="handleOk">
           {{ props.okText }}
         </button>

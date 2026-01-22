@@ -44,7 +44,7 @@
               </svg>
               <span>{{ $t('eml.permission_denied') }}</span>
             </div>
-            <button class="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded text-white text-sm transition"
+            <button class="btn btn-danger btn-sm"
                     @click="openAndroidSettings">
               {{ $t('eml.open_settings') }}
             </button>
@@ -58,7 +58,7 @@
         <div class="p-4">
           <button v-for="device in devices"
                   :key="device.id"
-                  class="w-full px-4 py-3 mb-2 text-left bg-background-lighter border border-border-gray rounded-md text-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:bg-background-lighter-lighter"
+                  class="btn btn-secondary btn-full mb-2 py-3 text-left"
                   :disabled="isRefreshing"
                   @click="handleDeviceClick(device)">
             {{ device.name || device.id }}
@@ -66,7 +66,7 @@
         </div>
 
         <div class="p-2">
-          <button class="w-full py-2 bg-background-lighter border rounded-md text-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:bg-background-lighter-lighter"
+          <button class="btn btn-secondary btn-full"
                   :disabled="isRefreshing"
                   @click="handleRefresh">
             {{ isRefreshing ? $t('eml.refreshing') : $t('eml.refresh_devices') }}

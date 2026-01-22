@@ -19,11 +19,11 @@
         </p>
 
         <div class="flex gap-3 w-full">
-          <button class="flex-1 px-4 py-2 text-sm text-white/80 bg-background-lighter-lighter rounded hover:bg-background-lighter-lighter-lighter transition-colors cursor-pointer"
+          <button class="btn btn-secondary flex-1"
                   @click="handleCancel">
             {{ cancelText }}
           </button>
-          <button class="flex-1 px-4 py-2 text-sm text-background bg-accent-primary rounded hover:opacity-90 transition-colors cursor-pointer"
+          <button class="btn btn-primary flex-1"
                   @click="handleConfirm">
             {{ confirmText }}
           </button>

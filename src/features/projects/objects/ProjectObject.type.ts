@@ -8,6 +8,7 @@ export interface EmlReading
   epoch: number;      // Unix timestamp
   eml: string;        // Raw EML data
   gps: string;        // Raw NMEA sentence (empty if no fix)
+  manualPosition?: { x: number; y: number };
 }
 
 export type LayerObject = EmlReading;

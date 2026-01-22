@@ -6,7 +6,7 @@ import { createEmlReading } from '@/features/projects/objects/objectUtils';
 import { useToast } from '@/common/composables/useToast';
 import { useDialog } from '@/generic/composables/useDialog';
 import ToastNotification from '@/common/components/ToastNotification.vue';
-import EmlPointAddedDialog from '@/features/eml/EmlPointAddedDialog.vue';
+import EmlPointAddedDialog, { type EmlDialogResult } from '@/features/eml/EmlPointAddedDialog.vue';
 import { ToastType } from '@/common/types/ToastType';
 import type { ProjectMetadata } from '@/features/projects/ProjectMetadata.type';
 import type { Layer } from '@/features/projects/objects/ProjectObject.type';
@@ -72,20 +72,20 @@ export const useEmlRecorder = (
     const gpsNmea = isGpsFresh ? (lastRawNmea.value || '') : '';
 
     // Show confirmation dialog before saving
-    const confirmed = await openDialog<boolean>(EmlPointAddedDialog, {
+    const result = await openDialog<EmlDialogResult>(EmlPointAddedDialog, {
       emlRaw: data,
       gpsRaw: gpsNmea,
       layerName: activeLayer.name
     });
 
-    if (!confirmed)
+    if (!result?.confirmed)
     {
       log('EML point discarded by user');
       return;
     }
 
-    // Create the EML reading
-    const emlReading = createEmlReading(data, gpsNmea);
+    // Create the EML reading with optional manual position
+    const emlReading = createEmlReading(data, gpsNmea, result.manualPosition);
 
     try
     {

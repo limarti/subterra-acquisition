@@ -23,7 +23,7 @@
       </OverlayScrollbarsComponent>
 
       <div class="flex justify-center my-5 shrink-0">
-        <button v-if="showCloseButton" class="cursor-pointer rounded-full px-2.5 py-0.5 text-white text-xl bg-background-lighter-lighter" @click="handleClose">
+        <button v-if="showCloseButton" class="btn btn-ghost btn-rounded px-2.5 py-0.5 text-xl" @click="handleClose">
           <svg class="w-6 h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M18.6454 5.29112C19.0369 5.68067 19.0384 6.31383 18.6489 6.70533L13.4107 11.9699L18.7089 17.2947C19.0984 17.6862 19.0968 18.3193 18.7053 18.7089C18.3138 19.0984 17.6807 19.0968 17.2911 18.7053L12 13.3876L6.70888 18.7053C6.31933 19.0968 5.68617 19.0984 5.29467 18.7089C4.90317 18.3193 4.90158 17.6862 5.29112 17.2947L10.5893 11.9699L5.3511 6.70534C4.96156 6.31384 4.96314 5.68067 5.35465 5.29113C5.74615 4.90158 6.37931 4.90317 6.76886 5.29467L12 10.5521L17.2311 5.29467C17.6207 4.90317 18.2539 4.90158 18.6454 5.29112Z" fill="white" />
           </svg>

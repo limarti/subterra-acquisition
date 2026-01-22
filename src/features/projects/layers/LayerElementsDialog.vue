@@ -27,7 +27,7 @@
               <span class="text-text-secondary text-xs">{{ formatTimestamp(element.epoch) }}</span>
             </div>
             <button type="button"
-                    class="p-1 text-text-secondary hover:text-red-400 transition cursor-pointer"
+                    class="btn btn-ghost p-1 text-text-secondary hover:text-red-400"
                     title="Delete element"
                     @click="handleDeleteElement(element.id)">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,6 +60,18 @@
               <span class="text-white font-medium">{{ getParsedEml(element).mode }}</span>
             </div>
           </div>
+
+          <!-- GPS Position -->
+          <div v-if="element.type === 'emlReading' && hasGpsData(element)" class="flex flex-col items-center p-2 bg-background-darker rounded text-xs mt-1">
+            <span class="text-text-secondary text-[10px]">GPS Position</span>
+            <span class="text-white font-medium font-mono">{{ getFormattedLatitude(element) }}, {{ getFormattedLongitude(element) }}</span>
+          </div>
+
+          <!-- Manual Position -->
+          <div v-if="element.type === 'emlReading' && element.manualPosition" class="flex flex-col items-center p-2 bg-background-darker rounded text-xs mt-1">
+            <span class="text-text-secondary text-[10px]">Manual Position</span>
+            <span class="text-white font-medium">{{ element.manualPosition.x }}, {{ element.manualPosition.y }} m</span>
+          </div>
         </div>
       </div>
     </template>
@@ -72,6 +84,8 @@
   import GeoGenericDialog from '@/generic/components/GeoGenericDialog.vue';
   import GeoConfirmationDialog from '@/generic/components/GeoConfirmationDialog.vue';
   import { parseEmlString } from '@/services/eml/utils/emlParser';
+  import { parseNmeaGga } from '@/services/gps/utils/nmeaParser';
+  import { formatCoordinateDMS } from '@/services/gps/utils/coordinateFormatter';
   import type { Layer, EmlReading } from '../objects/ProjectObject.type';
 
   interface Props
@@ -105,6 +119,48 @@
   const getParsedEml = (element: EmlReading) =>
   {
     return parseEmlString(element.eml);
+  };
+
+  const getParsedGps = (element: EmlReading) =>
+  {
+    if (!element.gps)
+    {
+      return null;
+    }
+    try
+    {
+      return parseNmeaGga(element.gps);
+    }
+    catch
+    {
+      return null;
+    }
+  };
+
+  const hasGpsData = (element: EmlReading): boolean =>
+  {
+    const gps = getParsedGps(element);
+    return gps !== null && gps.isValid && gps.latitude !== null && gps.longitude !== null;
+  };
+
+  const getFormattedLatitude = (element: EmlReading): string =>
+  {
+    const gps = getParsedGps(element);
+    if (gps?.latitude !== null)
+    {
+      return formatCoordinateDMS(gps!.latitude!, true);
+    }
+    return '-';
+  };
+
+  const getFormattedLongitude = (element: EmlReading): string =>
+  {
+    const gps = getParsedGps(element);
+    if (gps?.longitude !== null)
+    {
+      return formatCoordinateDMS(gps!.longitude!, false);
+    }
+    return '-';
   };
 
   const handleDeleteElement = async (elementId: string): Promise<void> =>

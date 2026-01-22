@@ -31,8 +31,8 @@
           </div>
         </div>
 
-        <!-- GPS Data Section -->
-        <div>
+        <!-- GPS Position Section -->
+        <div class="mb-4">
           <span class="text-[10px] text-gray-500 uppercase tracking-wide">GPS Position</span>
           <div class="mt-2 p-3 bg-background-darker rounded">
             <template v-if="hasGpsData">
@@ -71,20 +71,57 @@
           </div>
         </div>
 
-        <!-- Layer info -->
-        <div class="mt-4 text-center text-text-secondary text-xs">
-          Add to "{{ layerName }}"
+        <!-- Manual Position Section -->
+        <div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-gray-500 uppercase tracking-wide">Manual Position</span>
+            <button v-if="showManualInput"
+                    type="button"
+                    class="text-[10px] text-white/50 hover:text-white/70 transition"
+                    @click="clearManualInput">
+              Clear
+            </button>
+          </div>
+          <div class="mt-2 p-3 bg-background-darker rounded">
+            <template v-if="!showManualInput">
+              <button type="button"
+                      class="btn btn-sm bg-transparent text-white/60 border border-border-gray hover:text-white hover:border-white/50"
+                      @click="showManualInput = true">
+                + Add manual position
+              </button>
+            </template>
+            <template v-else>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col">
+                  <label class="text-text-secondary text-[10px] mb-1">X (meters)</label>
+                  <input v-model.number="manualX"
+                         type="number"
+                         step="0.01"
+                         class="w-full px-2 py-1.5 bg-background-dark text-white text-sm rounded border border-border-gray focus:border-blue-500 focus:outline-none"
+                         placeholder="0.00">
+                </div>
+                <div class="flex flex-col">
+                  <label class="text-text-secondary text-[10px] mb-1">Y (meters)</label>
+                  <input v-model.number="manualY"
+                         type="number"
+                         step="0.01"
+                         class="w-full px-2 py-1.5 bg-background-dark text-white text-sm rounded border border-border-gray focus:border-blue-500 focus:outline-none"
+                         placeholder="0.00">
+                </div>
+              </div>
+            </template>
+          </div>
         </div>
 
         <!-- Action buttons -->
         <div class="flex gap-3 mt-5">
           <button type="button"
-                  class="flex-1 py-2.5 px-4 rounded bg-background-darker text-white/70 font-medium cursor-pointer hover:bg-background-darker/80 transition"
+                  class="btn btn-secondary flex-1"
                   @click="handleDiscard">
             Discard
           </button>
           <button type="button"
-                  class="flex-1 py-2.5 px-4 rounded bg-green-600 text-white font-medium cursor-pointer hover:bg-green-500 transition"
+                  class="btn btn-success flex-1"
                   @click="handleConfirm">
             Confirm
           </button>
@@ -95,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
   import { closeDialog } from 'vue3-promise-dialog';
   import GeoGenericDialog from '@/generic/components/GeoGenericDialog.vue';
   import { parseEmlString } from '@/services/eml/utils/emlParser';
@@ -105,6 +142,12 @@
   import { GpsFixQuality } from '@/services/gps/types/GpsFixQuality.enum';
   import type { NmeaGgaData } from '@/services/gps/types/NmeaGgaData.type';
 
+  export interface EmlDialogResult
+  {
+    confirmed: boolean;
+    manualPosition?: { x: number; y: number };
+  }
+
   interface Props
   {
     emlRaw: string;
@@ -113,6 +156,11 @@
   }
 
   const props = defineProps<Props>();
+
+  // Manual position entry state
+  const showManualInput = ref(false);
+  const manualX = ref<number | null>(null);
+  const manualY = ref<number | null>(null);
 
   const emlData = computed(() => parseEmlString(props.emlRaw));
 
@@ -181,17 +229,31 @@
     }
   });
 
+  const clearManualInput = () =>
+  {
+    showManualInput.value = false;
+    manualX.value = null;
+    manualY.value = null;
+  };
+
   const handleDiscard = () =>
   {
-    closeDialog(false);
+    closeDialog({ confirmed: false } as EmlDialogResult);
   };
 
   const handleConfirm = () =>
   {
-    closeDialog(true);
+    const result: EmlDialogResult = { confirmed: true };
+
+    if (showManualInput.value && manualX.value !== null && manualY.value !== null)
+    {
+      result.manualPosition = { x: manualX.value, y: manualY.value };
+    }
+
+    closeDialog(result);
   };
 
-  defineExpose({ returnValue: () => false });
+  defineExpose({ returnValue: () => ({ confirmed: false } as EmlDialogResult) });
 </script>
 
 <style scoped>

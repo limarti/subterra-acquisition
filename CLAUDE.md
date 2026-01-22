@@ -19,7 +19,7 @@ cd Frontend
 ```
 
 **Setup:**
-- Use Node.js 22.14.0 (run `nvm use` to switch)
+- Use Node.js 24.0.0 (run `nvm use` to switch)
 - Run `npm install` to install dependencies
 
 **Development:**
@@ -112,8 +112,8 @@ After ANY file modification (Edit, MultiEdit, Write):
 
 ## Development Environment
 
-- **Node.js**: 22.14.0 (specified in `.nvmrc`)
-- **Package Manager**: npm (with Node.js 22.14.0)
+- **Node.js**: 24.0.0 (specified in `.nvmrc`)
+- **Package Manager**: npm (with Node.js 24.0.0)
 - **Mobile Development**: Android Studio
 - **Build Tool**: Vite with Terser minification
 
